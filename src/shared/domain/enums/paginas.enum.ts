@@ -1,6 +1,5 @@
 export enum Paginas {
-  LOGIN = "login",
-  REGISTER = "register",
+  PUBLIC = "public",
   PROFILE = "profile",
   CHATS = "chats",
 }

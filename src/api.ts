@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useAuthStore } from "./modules/auth/application/store/auth.store";
+import { useAuthStore } from "./shared/infraestructure/hooks/useAuthStore";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 

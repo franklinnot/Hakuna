@@ -1,14 +1,14 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { SessionState } from "../types/session-state.interface";
-import { Paginas } from "../../../../shared/domain/enums/paginas.enum";
+import type { SessionState } from "../../../modules/auth/application/types/session-state.interface";
+import { Paginas } from "../../domain/enums/paginas.enum";
 
 export const useAuthStore = create<SessionState>()(
   persist(
     (set) => ({
       token: null,
       usuario: null,
-      view: Paginas.LOGIN,
+      view: Paginas.PUBLIC,
       isAuthenticated: false,
 
       setView: (view) => set({ view }),
@@ -18,7 +18,7 @@ export const useAuthStore = create<SessionState>()(
           usuario,
           token: token,
           isAuthenticated: true,
-          view: Paginas.PROFILE,
+          view: Paginas.CHATS,
         }),
 
       logout: () =>
@@ -26,7 +26,7 @@ export const useAuthStore = create<SessionState>()(
           token: null,
           usuario: null,
           isAuthenticated: false,
-          view: Paginas.LOGIN,
+          view: Paginas.PUBLIC,
         }),
     }),
     {

@@ -1,9 +1,55 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
 @import "tailwindcss";
 
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  font-synthesis: none;
+  font-family: "Roboto", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  color: #fff;
+
   text-rendering: geometricPrecision;
+  font-synthesis: none;
+  font-optical-sizing: auto;
+  font-variation-settings: "wdth" 100;
+  line-height: 1.2;
+
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  --green-light: #17CD7E;
+  --green-primary: #0db86e;
+  --green-secondary: #09ac65;
+  --black-primary: #1e1e1e;
+  --black-secondary: #111;
+  --gray-primary: #f3f3f3;
+  --gray-secondary: #f0f0f0;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+
+a:focus{
+  outline: none;
+}
+
+a:hover::after, a:focus::after {
+  transform: scaleX(1);
+}
+
+a::after {
+  content: "";
+  display: block;
+  height: 1px;
+  width: 100%;
+  background-color: currentColor;
+  transform: scaleX(0);
+  transition: transform 0.1s ease-in-out;
 }
