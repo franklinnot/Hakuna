@@ -4,6 +4,7 @@ import { Sidebar } from "../components/sidebar/sidebar";
 import { useAuthStore } from "../../../../shared/infraestructure/hooks/useAuthStore";
 import { ProfileModal } from "../components/perfil/profile-modal";
 import { AddUserModal } from "../components/añadir-usuarios/add-user";
+import {HistorialMensajes} from '../components/historial-mensajes/historial-mensajes'
 
 
 export const ChatsPage = () => {
@@ -31,8 +32,7 @@ export const ChatsPage = () => {
             ? "Hola! Aquí van los grupos"
             : "Hola! Aquí van los chats privados"}
         </div>
-
-        <div className="bg-red-500">Historial de mensajes de un chat en específico</div>
+        <HistorialMensajes />
       </div>
 
       {/* Modales de prueba*/}
