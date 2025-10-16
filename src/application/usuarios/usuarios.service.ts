@@ -33,11 +33,4 @@ export class UsuariosService {
     const { data } = await api.get(`${this.ROUTE}/search/${term}`);
     return data;
   };
-
-  public static eliminarFotoPerfil = async (): Promise<
-    IRespuesta<IUsuarioResponse>
-  > => {
-    const { data } = await api.get(`${this.ROUTE}/remove-foto`);
-    return data;
-  };
 }

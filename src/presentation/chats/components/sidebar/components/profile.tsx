@@ -1,92 +1,80 @@
+import { useEffect, useMemo, useState } from 'react';
 import { useAuthStore } from '../../../../../application/auth/hooks/useAuthStore';
 import { Input } from '../../../../../shared/presentation/components/ui/input';
-import { useEffect, useMemo, useState } from 'react';
-import { InputChange } from '../../../../../shared/presentation/html.types';
-import { ErrorResponse } from '../../../../../shared/application/response';
 import { UpdateUsuarioSchema } from '../../../../../application/usuarios/usuarios.dtos';
 import { UsuariosService } from '../../../../../application/usuarios/usuarios.service';
-import { ErrorDisplay } from '../../../../../shared/presentation/components/ui/errors/error-display';
 import { UploadFotoPerfil } from '../../../../../shared/presentation/components/ui/upload-foto-perfi';
-import { PhotoAction } from '../../../../types';
 import { Button } from '../../../../../shared/presentation/components/ui/button';
+import { ErrorDisplay } from '../../../../../shared/presentation/components/ui/errors/error-display';
+import { ErrorResponse } from '../../../../../shared/application/response';
 
 export const Profile = () => {
   const { setUsuario } = useAuthStore();
   const usuario = useAuthStore((s) => s.usuario);
+  const nombreActual = usuario?.nombre || '';
+  const usernameActual = usuario?.username || '';
 
-  // guardamos la última acción del usuario sobre la foto
-  // inicio: 'none' (no ha tocado)
-  const [fotoAction, setFotoAction] = useState<PhotoAction>({ action: 'none' });
-  const [nombre, setNombre] = useState(usuario?.nombre || '');
-  const [username, setUsername] = useState(usuario?.username || '');
-  const [isLoading, setIsLoading] = useState(false);
+  const [nuevoNombre, setNombre] = useState(nombreActual);
+  const [nuevoUsername, setUsername] = useState(usernameActual);
+  const [nuevaFoto, setnuevaFoto] = useState<string | null | undefined>(
+    undefined,
+  );
   const [error, setError] = useState<ErrorResponse>(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setNombre(usuario?.nombre || '');
     setUsername(usuario?.username || '');
-    setFotoAction({ action: 'none' }); // reseteamos la acción al sincronizar usuario
+    setnuevaFoto(undefined);
     setError(null);
   }, [usuario]);
 
   const hayCambios = useMemo(() => {
-    const cambioNombre = nombre.trim() !== (usuario?.nombre || '').trim();
-    const cambioUsername =
-      username.trim().toLowerCase() !==
-      (usuario?.username || '').trim().toLowerCase();
-    const cambioFoto = fotoAction.action !== 'none';
-    return cambioNombre || cambioUsername || cambioFoto;
-  }, [nombre, username, fotoAction, usuario]);
+    const cambioNombre = nuevoNombre.trim() != nombreActual;
+    const cambioUser = nuevoUsername.trim() !== usernameActual;
+    return cambioNombre || cambioUser || nuevaFoto !== undefined;
+  }, [nuevoNombre, nombreActual, nuevoUsername, usernameActual, nuevaFoto]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!hayCambios) return;
+
     setError(null);
-    setIsLoading(true);
+    setLoading(true);
 
     try {
-      // 1) si la acción fue 'remove' y el usuario tenía foto -> llamar eliminar endpoint
-      if (fotoAction.action === 'remove' && usuario?.link_foto) {
-        const resp = await UsuariosService.eliminarFotoPerfil();
-        if (resp.success && resp.data) {
-          setUsuario(resp.data);
-          setFotoAction({ action: 'none' });
-        } else {
-          setError(resp.error);
-        }
-        setIsLoading(false);
-        return;
-      }
+      // construir payload sólo con los campos que cambiaron o que deben enviarse
+      const payload: Record<string, any> = {};
 
-      // 2) si la acción fue 'set' -> incluimos foto base64
-      const payload: any = {
-        nombre,
-        username,
-      };
-      if (fotoAction.action === 'set') {
-        payload.foto = fotoAction.b64;
-      } else {
-        // fotoAction.action === 'none' => no tocar la propiedad 'foto' en el DTO
+      if (nuevoNombre.trim() !== nombreActual)
+        payload.nombre = nuevoNombre.trim();
+      if (nuevoUsername.trim() !== usernameActual)
+        payload.username = nuevoUsername.trim();
+      // solo incluir si nuevaFoto !== undefined
+      if (typeof nuevaFoto !== 'undefined') {
+        // puede ser null o base64 string
+        payload.foto = nuevaFoto;
       }
 
       const result = UpdateUsuarioSchema.safeParse(payload);
       if (!result.success) {
         setError(result.error.issues.map((i) => i.message));
-        setIsLoading(false);
+        setLoading(false);
         return;
       }
 
       const response = await UsuariosService.updateUsuario(result.data);
       if (response.success && response.data) {
         setUsuario(response.data);
-        setFotoAction({ action: 'none' }); // reset
+        setnuevaFoto(undefined);
       } else {
         setError(response.error);
       }
     } catch (err) {
       console.error(err);
-      setError('Hubo un error al actualizar.');
+      setError('Error actualizando perfil.');
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
@@ -97,45 +85,33 @@ export const Profile = () => {
     >
       <UploadFotoPerfil
         initialUrl={usuario?.link_foto}
-        onChange={(action: PhotoAction) => setFotoAction(action)}
+        onChange={setnuevaFoto}
       />
 
       <div className="w-full flex flex-col gap-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Nombre
-          </label>
+        <label className="block text-sm font-medium text-gray-700">
+          Nombre
           <Input
-            type="text"
-            value={nombre}
-            onChange={(e: InputChange) => setNombre(e.target.value)}
-            placeholder="Tu nombre"
+            value={nuevoNombre}
+            onChange={(e) => setNombre(e.target.value)}
             className="mt-1"
-            autoFocus
           />
-        </div>
+        </label>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Usuario
-          </label>
+        <label className="block text-sm font-medium text-gray-700">
+          Usuario
           <Input
-            type="text"
-            value={username}
-            onChange={(e: InputChange) =>
-              setUsername(e.target.value.toLowerCase())
-            }
-            placeholder="Tu usuario"
+            value={nuevoUsername}
+            onChange={(e) => setUsername(e.target.value.toLowerCase())}
             className="mt-1"
           />
-        </div>
+        </label>
       </div>
 
-      {/* Errores */}
       {error && <ErrorDisplay error={error} />}
 
-      <Button type="submit" disabled={!hayCambios || isLoading}>
-        {isLoading ? 'Cargando...' : 'Actualizar'}
+      <Button type="submit" disabled={!hayCambios || loading}>
+        {loading ? 'Actualizando...' : 'Actualizar'}
       </Button>
     </form>
   );
