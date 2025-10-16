@@ -16,7 +16,7 @@ import { UploadFotoPerfil } from '../../../shared/presentation/components/ui/upl
 
 export const RegisterForm = ({ switchTo }: { switchTo: () => void }) => {
   const { setSession } = useAuthStore();
-  const [foto, setFoto] = useState<string | null>(null);
+  const [foto, setFoto] = useState<string | null | undefined>(undefined);
   const [nombre, setNombre] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -64,7 +64,7 @@ export const RegisterForm = ({ switchTo }: { switchTo: () => void }) => {
       className="flex flex-col gap-5 px-4 py-2 w-[300px] items-center"
     >
       {/* foto */}
-      <UploadFotoPerfil onChange={(b64) => setFoto(b64)} />
+      <UploadFotoPerfil initialUrl={undefined} onChange={setFoto} />
 
       {/* nombre */}
       <div className="block w-full relative">

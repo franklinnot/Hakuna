@@ -44,7 +44,7 @@ export const Profile = () => {
 
     try {
       // construir payload sólo con los campos que cambiaron o que deben enviarse
-      const payload: Record<string, any> = {};
+      const payload: Record<string, string | null | undefined> = {};
 
       if (nuevoNombre.trim() !== nombreActual)
         payload.nombre = nuevoNombre.trim();
