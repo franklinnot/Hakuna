@@ -1,29 +1,20 @@
-import { useTabControl } from "./shared/infraestructure/hooks/useTabControl";
-import { useAuthStore } from "./shared/infraestructure/hooks/useAuthStore";
-import { Paginas } from "./shared/domain/enums/paginas.enum";
-import { ProfilePage } from "./modules/usuarios/infraestructure/pages/profile.page";
-import { InactiveTab } from "./shared/infraestructure/pages/inactive-tab.page";
-import { PublicPage } from "./modules/auth/infraestructure/public-page/public.page";
-import { ChatsPage } from "./modules/chats/infraestructure/pages/chats.page";
+import { useTabControl } from './shared/application/hooks/useTabControl';
+import { useAuthStore } from './application/auth/hooks/useAuthStore';
+import { InactiveTab } from './shared/presentation/pages/inactive-tab.page';
+import { PublicPage } from './presentation/public/public.page';
+import { ChatsPage } from './presentation/chats/chats.page';
 
 function App() {
   const { isTabActive, claimSession } = useTabControl();
-  const { view, isAuthenticated } = useAuthStore();
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const token = useAuthStore((state) => state.isAuthenticated);
 
   const renderContent = () => {
-    if (!isAuthenticated) {
+    if (!isAuthenticated || !token) {
       return <PublicPage />;
     }
 
-    // si está autenticado, renderiza las vistas protegidas
-    switch (view) {
-      case Paginas.PROFILE:
-        return <ProfilePage />;
-      case Paginas.CHATS:
-        return <ChatsPage />;
-      default:
-        return <ChatsPage />;
-    }
+    return <ChatsPage />;
   };
 
   return (
