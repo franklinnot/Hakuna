@@ -1,6 +1,6 @@
 import api from '../api';
 import { IRespuesta } from '../../shared/application/response';
-import { IChatPrivadoResponse } from './chats.responses';
+import { IChatGrupalResponse, IChatPrivadoResponse } from './chats.responses';
 
 export class ChatsService {
   private static ROUTE = '/chats';
@@ -18,6 +18,13 @@ export class ChatsService {
     IRespuesta<IChatPrivadoResponse[]>
   > => {
     const { data } = await api.get(`${this.ROUTE}/get-privados`);
+    return data;
+  };
+
+  public static getChatsGrupales = async (): Promise<
+    IRespuesta<IChatGrupalResponse[]>
+  > => {
+    const { data } = await api.get(`${this.ROUTE}/get-grupales`);
     return data;
   };
 }

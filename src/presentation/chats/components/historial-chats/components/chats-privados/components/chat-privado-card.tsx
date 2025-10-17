@@ -14,17 +14,15 @@ export const ChatPrivadoCard = ({
   onClick,
   usuarioA,
 }: CardChatPrivadoProps) => {
-  const historial_mensajes = chat.historial_mensajes;
   const usuarioB = chat.usuarioB;
   const today = new Date();
 
   let hora: Date | string | null = null;
   let fecha: Date | string | null = null;
   let fecha_mensaje: Date = new Date();
-  let mensaje = null;
+  const mensaje = chat.ultimo_mensaje;
   let descripcion: string | null = '';
-  if (historial_mensajes && historial_mensajes.length > 0) {
-    mensaje = historial_mensajes[0];
+  if (mensaje) {
     descripcion = mensaje.descripcion;
     fecha_mensaje = new Date(mensaje.createdAt);
     hora = formatLocalDate(fecha_mensaje, 'time')!;

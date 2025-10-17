@@ -1,5 +1,6 @@
 import { AuthLayout } from '../../shared/presentation/components/layouts/auth-layout';
 import { HistorialChats } from './components/historial-chats/historial-chats';
+import { HistorialMensajes } from './components/historial-mensajes/historial-mensajes';
 import { Sidebar } from './components/sidebar/sidebar';
 
 export const ChatsPage = () => {
@@ -15,7 +16,7 @@ export const ChatsPage = () => {
         {/* Historial de chats */}
         <HistorialChats />
         {/* <HistorialMensajes /> */}
-        <p>Soy el historial de mensajes</p>
+        <HistorialMensajes />
       </div>
     </AuthLayout>
   );

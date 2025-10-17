@@ -5,6 +5,7 @@ import {
   IChatGrupalResponse,
   IChatPrivadoResponse,
 } from '../../chats/chats.responses';
+import { IMensajeResponse } from '../../mensajes/mensajes.responses';
 
 export interface IUseAuthStore {
   usuario: IUsuarioResponse | null;
@@ -21,6 +22,10 @@ export interface IUseAuthStore {
   chatPrivadoActivo: IChatPrivadoResponse | null;
   // de que chat grupal se deben mostrar los mensajes
   chatGrupalActivo: IChatGrupalResponse | null;
+  updateMensajesChatPrivado: (
+    id_chat: string,
+    nuevoMensaje: IMensajeResponse,
+  ) => void;
 
   // acciones
   setView: (view: Paginas) => void;
