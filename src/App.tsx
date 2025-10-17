@@ -7,7 +7,7 @@ import { ChatsPage } from './presentation/chats/chats.page';
 function App() {
   const { isTabActive, claimSession } = useTabControl();
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
-  const token = useAuthStore((state) => state.isAuthenticated);
+  const token = useAuthStore((state) => state.token);
 
   const renderContent = () => {
     if (!isAuthenticated || !token) {

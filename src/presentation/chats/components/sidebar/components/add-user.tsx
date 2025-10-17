@@ -40,6 +40,7 @@ export const AddUser = () => {
         placeholder="Buscar..."
         value={query}
         onChange={(e) => setQuery(e.target.value)}
+        autoFocus
       />
 
       <div className="flex flex-col gap-2 max-h-64 overflow-auto">

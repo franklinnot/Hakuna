@@ -53,7 +53,10 @@ export const LoginForm = ({ switchTo }: { switchTo: () => void }) => {
     >
       {/* Username */}
       <div className="block w-full relative">
-        <UserIcon className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
+        <UserIcon
+          className="pointer-events-none absolute left-3 top-1/2
+        h-5 w-5 -translate-y-1/2 text-gray-400"
+        />
         <Input
           placeholder="Nombre de usuario"
           value={username}
@@ -69,7 +72,10 @@ export const LoginForm = ({ switchTo }: { switchTo: () => void }) => {
 
       {/* Password */}
       <div className="block w-full relative">
-        <LockClosedIcon className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
+        <LockClosedIcon
+          className="pointer-events-none absolute 
+        left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400"
+        />
         <Input
           type="password"
           placeholder="Contraseña"
@@ -93,7 +99,8 @@ export const LoginForm = ({ switchTo }: { switchTo: () => void }) => {
         <button
           type="button"
           onClick={switchTo}
-          className="font-medium text-[var(--green-primary)] hover:underline transition duration-150 ease-in-out"
+          className="font-medium text-[var(--green-primary)] hover:underline 
+          transition duration-150 ease-in-out"
         >
           Regístrate
         </button>

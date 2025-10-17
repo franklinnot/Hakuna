@@ -1,33 +1,46 @@
-import { IChatPrivadoResponse } from '../../../../../application/chats/chats.responses';
+import React from 'react';
+import { IChatGrupalResponse } from '../../../../../application/chats/chats.responses';
 import { formatLocalDate } from '../../../../../shared/application/mappers/utc-to-localdate';
 
-export type CardChatPrivadoProps = {
+export type CardChatGrupalProps = {
   onClick: (id_chat: string) => void;
-} & IChatPrivadoResponse;
+} & IChatGrupalResponse;
 
-export const ChatPrivadoCard = ({
+const handleOnClik = (
+  id_chat: string,
+  onClick: (id_chat: string) => void,
+  e: React.FormEvent<HTMLDivElement>,
+) => {
+  e.preventDefault();
+  onClick(id_chat);
+};
+
+export const ChatGrupalCard = ({
   id_chat,
   historial_mensajes,
-  // createdAt,
-  // id_integranteA,
-  integranteB,
+  link_foto,
+  nombre,
+//   createdAt,
+//   descripcion,
+//   integrantes,
+//   cantidad_integrantes,
   onClick,
-}: CardChatPrivadoProps) => {
+}: CardChatGrupalProps) => {
   return (
     <div
       className="flex items-center p-3 mb-2 bg-white rounded-lg shadow-sm cursor-pointer hover:bg-gray-100"
-      onClick={() => onClick(id_chat)}
+      onClick={(e) => handleOnClik(id_chat, onClick, e)}
     >
       {/* Imagen de perfil */}
       <img
-        src={integranteB.link_foto ?? ''}
-        alt={integranteB.username}
+        src={link_foto ?? ''}
+        alt={nombre}
         className="w-12 h-12 rounded-full mr-3 object-cover"
       />
 
       {/* Nombre y último mensaje */}
       <div className="flex-1">
-        <p className="font-semibold text-gray-800">{integranteB.nombre}</p>
+        <p className="font-semibold text-gray-800">{nombre}</p>
         <p className="text-sm text-gray-500 truncate">
           {historial_mensajes![0].descripcion ?? '...'}
         </p>

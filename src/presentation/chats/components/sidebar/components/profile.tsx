@@ -95,6 +95,7 @@ export const Profile = () => {
             value={nuevoNombre}
             onChange={(e) => setNombre(e.target.value)}
             className="mt-1"
+            autoFocus
           />
         </label>
 

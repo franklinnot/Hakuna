@@ -1,4 +1,5 @@
 import { AuthLayout } from '../../shared/presentation/components/layouts/auth-layout';
+import { HistorialChats } from './components/historial-chats/historial-chats';
 import { Sidebar } from './components/sidebar/sidebar';
 
 export const ChatsPage = () => {
@@ -12,15 +13,7 @@ export const ChatsPage = () => {
         <Sidebar />
 
         {/* Historial de chats */}
-        <div
-          className="bg-green-500 flex items-center justify-center text-white 
-        font-bold text-lg"
-        >
-          {/* {activeChatType === 'grupos'
-            ? 'Hola! Aquí van los grupos'
-            : 'Hola! Aquí van los chats privados'} */}
-          Chtas
-        </div>
+        <HistorialChats />
         {/* <HistorialMensajes /> */}
         <p>Soy el historial de mensajes</p>
       </div>

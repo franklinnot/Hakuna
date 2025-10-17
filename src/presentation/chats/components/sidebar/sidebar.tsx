@@ -44,10 +44,6 @@ export const Sidebar = () => {
         return 'Mi perfil';
       case 'add-user':
         return 'Buscar usuarios';
-      case 'chats-privados':
-        return 'Chats privados';
-      case 'chats-grupales':
-        return 'Chats grupales';
       default:
         return '';
     }
@@ -63,24 +59,16 @@ export const Sidebar = () => {
         link_foto={usuario!.link_foto}
         onClick={handleOpenProfile}
         nombre={usuario!.nombre}
+        className="hover:scale-110 transition-transform duration-200 
+        ease-in-out size-[48px]"
+        verPerfil={true}
       />
-
-      {/* Añadir usuarios */}
-      <Button
-        className="size-12 p-2 flex items-center justify-center 
-        bg-[var(--green-primary)] hover:bg-[var(--green-dark)]"
-        onClick={() => {
-          handleOpenAddUser();
-        }}
-        title="Buscar usuarios"
-      >
-        <UserPlusIcon className="size-[24px] stroke-[1.5]]" />
-      </Button>
 
       {/* Chats privados */}
       <Button
         className="size-12 p-2 flex items-center justify-center 
-        bg-[var(--green-primary)] hover:bg-[var(--green-dark)]"
+        bg-[var(--green-primary)] hover:bg-[var(--green-dark)] hover:scale-125
+        transition-transform duration-200 ease-in-out"
         onClick={() => {
           handleOpenChatsPrivados();
         }}
@@ -92,7 +80,8 @@ export const Sidebar = () => {
       {/* Chats Grupales */}
       <Button
         className="size-12 p-2 flex items-center justify-center 
-        bg-[var(--green-primary)] hover:bg-[var(--green-dark)]"
+        bg-[var(--green-primary)] hover:bg-[var(--green-dark)] hover:scale-125
+        transition-transform duration-200 ease-in-out"
         onClick={() => {
           handleOpenChatsGrupales();
         }}
@@ -101,12 +90,26 @@ export const Sidebar = () => {
         <UserGroupIcon className="size-[24px] stroke-[1.5]" />
       </Button>
 
+      {/* Añadir usuarios */}
+      <Button
+        className="size-12 p-2 flex items-center justify-center 
+        bg-[var(--green-primary)] hover:bg-[var(--green-dark)] hover:scale-125
+        transition-transform duration-200 ease-in-out"
+        onClick={() => {
+          handleOpenAddUser();
+        }}
+        title="Buscar usuarios"
+      >
+        <UserPlusIcon className="size-[24px] stroke-[1.5]]" />
+      </Button>
+
       {/* Cerrar Sesion */}
       <Button
         className="size-12 p-2 flex items-center justify-center 
-        mt-auto bg-[var(--green-primary)] hover:bg-[var(--green-dark)]"
+        mt-auto bg-[var(--green-primary)] hover:bg-[var(--green-dark)] hover:scale-125
+        transition-transform duration-200 ease-in-out"
         onClick={logout}
-        title='Cerrar sesión'
+        title="Cerrar sesión"
       >
         <ArrowLeftEndOnRectangleIcon className="size-[24px] stroke-[1.5]" />
       </Button>

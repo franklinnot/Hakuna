@@ -76,6 +76,7 @@ export const RegisterForm = ({ switchTo }: { switchTo: () => void }) => {
           disabled={isLoading}
           className="pl-10"
           required
+          autoFocus
         />
       </div>
 
@@ -91,7 +92,6 @@ export const RegisterForm = ({ switchTo }: { switchTo: () => void }) => {
           disabled={isLoading}
           className="pl-10"
           required
-          autoFocus
         />
       </div>
 
