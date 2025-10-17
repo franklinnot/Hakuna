@@ -9,7 +9,7 @@ import { InputChange } from '../../../../shared/presentation/html.types';
 import { ChatsService } from '../../../../application/chats/chats.service';
 import { MensajesService } from '../../../../application/mensajes/mensajes.service';
 import { SkeletonChatsList } from '../../../../shared/presentation/components/ui/skeleton-chats-list';
-import { IChatGrupalResponse, IChatPrivadoResponse } from '../../../../application/chats/chats.responses';
+import { IChatGrupalResponse } from '../../../../application/chats/chats.responses';
 
 export const HistorialChats = () => {
   const tipoChatsActivo = useAuthStore((state) => state.tipoChatsActivo);
@@ -28,8 +28,6 @@ export const HistorialChats = () => {
           const response = await ChatsService.getChatsPrivados();
           if (response.success && response.data) {
             setChatsPrivados(response.data);
-            // Luego cargar los mensajes en segundo plano
-            preloadMensajesPrivados(response.data);
           }
         } else {
           const response = await ChatsService.getChatsGrupales();
@@ -47,24 +45,6 @@ export const HistorialChats = () => {
 
     fetchData();
   }, [tipoChatsActivo]);
-
-  // carga en segundo plano los mensajes de cada chat privado
-  const preloadMensajesPrivados = async (chats: IChatPrivadoResponse[]) => {
-    const updatedChats = await Promise.all(
-      chats.map(async (chat) => {
-        try {
-          const resp = await MensajesService.getMensajesPrivados(chat.id_chat);
-          if (resp.success && resp.data) {
-            return { ...chat, historial_mensajes: resp.data };
-          }
-        } catch {
-          console.warn(`Error cargando mensajes para chat ${chat.id_chat}`);
-        }
-        return chat;
-      }),
-    );
-    setChatsPrivados(updatedChats);
-  };
 
   // carga en segundo plano los mensajes de cada chat grupal
   const preloadMensajesGrupales = async (chats: IChatGrupalResponse[]) => {
