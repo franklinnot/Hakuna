@@ -7,7 +7,7 @@ export interface IChatPrivadoResponse {
   historial_mensajes: IMensajeResponse[] | null;
   createdAt: Date;
   usuarioB: IUsuarioResponse;
-  ultimo_mensaje?: IMensajeResponse;
+  ultimo_mensaje?: IMensajeResponse | null;
 }
 
 //

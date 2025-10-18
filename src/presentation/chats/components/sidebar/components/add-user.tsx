@@ -5,11 +5,20 @@ import { ChatBubbleLeftIcon } from '@heroicons/react/24/solid';
 import { Image } from '../../../../../shared/presentation/components/ui/img';
 import { UsuariosService } from '../../../../../application/usuarios/usuarios.service';
 import { IUsuarioResponse } from '../../../../../application/usuarios/usuarios.responses';
+import { useAuthStore } from '../../../../../application/auth/hooks/useAuthStore';
+import { IChatPrivadoResponse } from '../../../../../application/chats/chats.responses';
+
+type IChatPrivadoResponseTemp = {
+  isPending: boolean;
+} & Partial<IChatPrivadoResponse>;
 
 export const AddUser = () => {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<IUsuarioResponse[]>([]);
   const [loading, setLoading] = useState(false);
+
+  const addChatPrivadoTemporal = useAuthStore((s) => s.addChatPrivadoTemporal);
+  const setChatPrivadoActivo = useAuthStore((s) => s.setChatPrivadoActivo);
 
   useEffect(() => {
     if (!query.trim()) {
@@ -32,6 +41,22 @@ export const AddUser = () => {
 
     fetchUsers();
   }, [query]);
+
+  const handleCreateTempChat = (user: IUsuarioResponse) => {
+    // temp id único
+    const tempId = `temp-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+
+    const tempChat: Partial<IChatPrivadoResponseTemp> = {
+      id_chat: tempId,
+      usuarioB: user,
+      historial_mensajes: [],
+      ultimo_mensaje: null,
+      isPending: true,
+    };
+
+    addChatPrivadoTemporal(tempChat);
+    setChatPrivadoActivo(tempChat as IChatPrivadoResponse);
+  };
 
   return (
     <div className="flex flex-col gap-4">
@@ -57,7 +82,7 @@ export const AddUser = () => {
                   <Image src={user.link_foto} alt="Perfil" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-gray-400 text-white font-bold">
-                    {user.username[0].toUpperCase()}
+                    {user.username?.[0]?.toUpperCase()}
                   </div>
                 )}
               </div>
@@ -70,7 +95,7 @@ export const AddUser = () => {
 
             <Button
               className="w-10 h-10 p-0 flex items-center justify-center"
-              onClick={() => console.log('Crear chat con:', user.id_usuario)}
+              onClick={() => handleCreateTempChat(user)}
             >
               <ChatBubbleLeftIcon className="h-5 w-5" />
             </Button>

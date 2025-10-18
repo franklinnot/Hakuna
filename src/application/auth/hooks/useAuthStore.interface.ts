@@ -16,6 +16,8 @@ export interface IUseAuthStore {
   tipoChatsActivo: TipoChats;
   // historial de chats privados
   chatsPrivados: IChatPrivadoResponse[] | null;
+  // historial de chats privados temporales => los que el usuario deja en la ui pero no envia
+  chatsPrivadosTemporales: Partial<IChatPrivadoResponse>[] | null;
   // historial de chats grupales
   chatsGrupales: IChatGrupalResponse[] | null;
   // de que chat privado se deben mostrar los mensajes
@@ -33,6 +35,9 @@ export interface IUseAuthStore {
   setUsuario: (data: IUsuarioResponse) => void;
   setTipoChatsActivo: (data: TipoChats) => void;
   setChatsPrivados: (data: IChatPrivadoResponse[]) => void;
+  addChatPrivadoTemporal: (data: Partial<IChatPrivadoResponse>) => void;
+  replaceTempChat: (tempId: string, realChat: IChatPrivadoResponse) => void;
+  removeTempChat: (tempId: string) => void;
   setChatsGrupales: (data: IChatGrupalResponse[]) => void;
   setChatPrivadoActivo: (data: IChatPrivadoResponse) => void;
   setChatGrupalActivo: (data: IChatGrupalResponse) => void;

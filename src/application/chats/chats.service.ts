@@ -27,4 +27,11 @@ export class ChatsService {
     const { data } = await api.get(`${this.ROUTE}/get-grupales`);
     return data;
   };
+
+  public static getChatPrivado = async (
+    id_chat: string,
+  ): Promise<IRespuesta<IChatPrivadoResponse>> => {
+    const { data } = await api.get(`${this.ROUTE}/get-privado/${id_chat}`);
+    return data;
+  };
 }

@@ -7,8 +7,8 @@ import { IUsuarioResponse } from '../../../../../application/usuarios/usuarios.r
 import { MensajesService } from '../../../../../application/mensajes/mensajes.service';
 import { useAuthStore } from '../../../../../application/auth/hooks/useAuthStore';
 import { Estado } from '../../../../../shared/domain/enums';
+import { ChatsService } from '../../../../../application/chats/chats.service';
 
-/** UIMessage extiende IMensajeResponse con campo opcional de estado de envío */
 type UIMessage = IMensajeResponse & {
   estado_envio?: 'sending' | 'sent' | 'error';
 };
@@ -16,7 +16,7 @@ type UIMessage = IMensajeResponse & {
 interface MensajesPrivadosProps {
   chat: IChatPrivadoResponse;
   usuario: IUsuarioResponse;
-  mensajesIniciales: IMensajeResponse[]; // vienen del store
+  mensajesIniciales: IMensajeResponse[];
 }
 
 export const MensajesPrivados = ({
@@ -25,17 +25,15 @@ export const MensajesPrivados = ({
   mensajesIniciales,
 }: MensajesPrivadosProps) => {
   const [mensajes, setMensajes] = useState<UIMessage[]>(
-    // inicializamos convertiendo createdAt a Date (si viene string)
     (mensajesIniciales || []).map((m) => ({ ...m })),
   );
   const [descripcion, setDescripcion] = useState('');
   const [archivos, setArchivos] = useState<ICrearArchivo[] | undefined>();
   const scrollRef = useRef<HTMLDivElement>(null);
+  const replaceTempChat = useAuthStore((s) => s.replaceTempChat);
 
   // accion del store para actualizar historial global
-  const updateChatInStore = useAuthStore(
-    (s) => s.updateMensajesChatPrivado,
-  );
+  const updateChatInStore = useAuthStore((s) => s.updateMensajesChatPrivado);
 
   // cuando cambie el chat o los mensajesIniciales, reemplace el estado local
   useEffect(() => {
@@ -72,8 +70,7 @@ export const MensajesPrivados = ({
   const handleSend = async () => {
     if (!descripcion.trim() && !archivos?.length) return;
 
-    // construimos un mensaje temporal que cumple IMensajeResponse
-    const tempId = `temp-${Date.now()}`;
+    const tempId = `temp-msg-${Date.now()}`;
     const tempMensaje: UIMessage = {
       id_mensaje: tempId,
       id_usuario: usuario.id_usuario,
@@ -81,16 +78,13 @@ export const MensajesPrivados = ({
       es_grupal: false,
       descripcion: descripcion,
       has_files: !!archivos?.length,
-      createdAt: new Date(), // Date is acceptable per interface
+      createdAt: new Date(),
       archivos: null,
-      estado: Estado.HABILITADO, // valor razonable temporal
+      estado: Estado.HABILITADO,
       estado_envio: 'sending',
     };
 
-    // Añadir optimista
     setMensajes((prev) => ordenar([...prev, tempMensaje]));
-
-    // limpiar input rápido para buena UX
     setDescripcion('');
     setArchivos(undefined);
 
@@ -104,7 +98,7 @@ export const MensajesPrivados = ({
       if (resp.success && resp.data) {
         const serverMsg = resp.data as IMensajeResponse;
 
-        // Reemplazar el temp por el mensaje real del servidor
+        // Reemplazar el temp por el mensaje real (actualiza lista local)
         setMensajes((prev) =>
           ordenar(
             prev.map((m) =>
@@ -115,8 +109,49 @@ export const MensajesPrivados = ({
           ),
         );
 
-        // Actualizar el store global con el mensaje real (sin campo UI)
-        updateChatInStore(chat.id_chat, serverMsg);
+        // Si el serverMsg.id_chat es distinto del chat actual (temp -> real)
+        if (
+          chat.id_chat?.toString().startsWith('temp-') &&
+          serverMsg.id_chat &&
+          serverMsg.id_chat !== chat.id_chat
+        ) {
+          try {
+            // Intentamos obtener el chat completo desde ChatsService
+            const respChat = await ChatsService.getChatPrivado(
+              serverMsg.id_chat,
+            );
+            if (respChat.success && respChat.data) {
+              replaceTempChat(chat.id_chat, respChat.data);
+            } else {
+              // Si la API no devuelve el chat completo, construimos uno mínimo
+              const minimalChat: Partial<IChatPrivadoResponse> = {
+                id_chat: serverMsg.id_chat,
+                usuarioB: chat.usuarioB,
+                historial_mensajes: [serverMsg],
+                ultimo_mensaje: serverMsg,
+              };
+              replaceTempChat(
+                chat.id_chat,
+                minimalChat as IChatPrivadoResponse,
+              );
+            }
+          } catch (err) {
+            console.warn(
+              'No se pudo obtener chat real, se reemplaza con minimalChat',
+              err,
+            );
+            const minimalChat: Partial<IChatPrivadoResponse> = {
+              id_chat: serverMsg.id_chat,
+              usuarioB: chat.usuarioB,
+              historial_mensajes: [serverMsg],
+              ultimo_mensaje: serverMsg,
+            };
+            replaceTempChat(chat.id_chat, minimalChat as IChatPrivadoResponse);
+          }
+        } else {
+          // si el id_chat no cambió (ya era real), solo actualizar store de mensajes
+          updateChatInStore(serverMsg.id_chat, serverMsg);
+        }
       } else {
         // marcar error en el temp
         setMensajes((prev) =>
