@@ -65,10 +65,16 @@ export const HistorialChats = () => {
   };
 
   return (
-    <div className="size-full bg-gray-800 p-5 rounded-2xl flex flex-col gap-5 w-full max-w-[450px]">
+    <div
+      className="size-full bg-gray-800 p-5 rounded-2xl flex flex-col 
+    gap-5 max-sm:max-w-[280px] w-full sm:w-[320px] md:w-[350px] lg:w-[380px]"
+    >
       {/* buscador */}
       <div className="block w-full relative">
-        <MagnifyingGlassIcon className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
+        <MagnifyingGlassIcon
+          className="pointer-events-none absolute left-3 
+        top-1/2 size-5 -translate-y-1/2 text-gray-400"
+        />
         <Input
           placeholder="Buscar..."
           value={termBusqueda}
@@ -79,7 +85,7 @@ export const HistorialChats = () => {
         />
       </div>
 
-      {/* 💬 Lista de chats */}
+      {/* lista de chats */}
       {isLoading ? (
         <SkeletonChatsList />
       ) : tipoChatsActivo === TipoChats.PRIVADO ? (
