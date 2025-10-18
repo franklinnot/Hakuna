@@ -1,8 +1,8 @@
-@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
-@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+@import 'tailwindcss';
 
 :root {
-  font-family: "Roboto", Helvetica, Arial, sans-serif;
+  font-family: 'Roboto', Helvetica, Arial, sans-serif;
   font-size: 14px;
   font-style: normal;
   font-weight: 400;
@@ -11,13 +11,13 @@
   text-rendering: geometricPrecision;
   font-synthesis: none;
   font-optical-sizing: auto;
-  font-variation-settings: "wdth" 100;
+  font-variation-settings: 'wdth' 100;
   line-height: 1.2;
 
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  --green-light: #17CD7E;
+  --green-light: #17cd7e;
   --green-primary: #0db86e;
   --green-secondary: #09ac65;
   --green-dark: #13a164;
@@ -36,21 +36,42 @@ body,
   padding: 0;
 }
 
-
-a:focus{
+a:focus {
   outline: none;
 }
 
-a:hover::after, a:focus::after {
+a:hover::after,
+a:focus::after {
   transform: scaleX(1);
 }
 
 a::after {
-  content: "";
+  content: '';
   display: block;
   height: 1px;
   width: 100%;
   background-color: currentColor;
   transform: scaleX(0);
   transition: transform 0.1s ease-in-out;
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }

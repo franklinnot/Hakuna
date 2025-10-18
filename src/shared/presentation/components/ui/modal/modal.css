@@ -1,4 +1,3 @@
-/* Estilos base para el backdrop */
 .modal-backdrop {
   position: fixed;
   top: 0;
@@ -6,11 +5,18 @@
   width: 100vw;
   height: 100vh;
   background-color: rgba(0, 0, 0, 0.4);
-  display: grid;
-  place-items: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 0;
   z-index: 1000;
   backdrop-filter: blur(4px);
   animation: fadeIn 0.25s ease-out forwards;
+}
+
+/* posición vertical cuando NO es relativo al padre */
+.modal-backdrop:not(.modal-relative) .modal-content {
+  margin-top: -8vh; /* Sube un poco, SIN exagerar */
 }
 
 /* Modo relativo: se posiciona dentro del padre */
@@ -76,19 +82,11 @@
   max-height: calc(90vh - 80px);
 }
 
-/* Animaciones */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+.modal-relative-container {
+  pointer-events: none;
 }
 
-@keyframes scaleIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+.modal-shadow-only {
+  pointer-events: all;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
 }

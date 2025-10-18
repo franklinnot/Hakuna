@@ -1,4 +1,4 @@
-import { EyeIcon } from '@heroicons/react/16/solid';
+import { EyeIcon } from '@heroicons/react/24/solid';
 import { Image } from './img';
 import { mixStyle } from '../../../application/lib/mix-style';
 
@@ -8,6 +8,7 @@ interface FotoPerfilProps {
   onClick?: () => void;
   className?: string;
   verPerfil?: boolean;
+  ref?: React.Ref<HTMLDivElement>;
 }
 
 export const FotoPerfil = ({
@@ -16,6 +17,7 @@ export const FotoPerfil = ({
   nombre,
   className,
   verPerfil,
+  ref,
 }: FotoPerfilProps) => {
   return (
     <div
@@ -27,6 +29,7 @@ export const FotoPerfil = ({
       )}
       onClick={verPerfil ? onClick : undefined}
       title="Ver perfil"
+      ref={ref}
     >
       {link_foto ? (
         <Image
