@@ -1,55 +1,60 @@
 import React from 'react';
-import { IChatGrupalResponse } from '../../../../../application/chats/chats.responses';
-import { formatLocalDate } from '../../../../../shared/application/mappers/utc-to-localdate';
+import { IChatGrupalResponse } from '../../../../../../../application/chats/chats.responses';
+import { formatLocalDate } from '../../../../../../../shared/application/mappers/utc-to-localdate';
+import { FotoPerfil } from '../../../../../../../shared/presentation/components/ui/foto-perfil';
 
 export type CardChatGrupalProps = {
-  onClick: (id_chat: string) => void;
-} & IChatGrupalResponse;
+  chat: IChatGrupalResponse;
+  onClick: (chat: IChatGrupalResponse) => void;
+};
 
 const handleOnClik = (
-  id_chat: string,
-  onClick: (id_chat: string) => void,
+  chat: IChatGrupalResponse,
+  onClick: (chat: IChatGrupalResponse) => void,
   e: React.FormEvent<HTMLDivElement>,
 ) => {
   e.preventDefault();
-  onClick(id_chat);
+  onClick(chat);
 };
 
 export const ChatGrupalCard = ({
-  id_chat,
-  historial_mensajes,
-  link_foto,
-  nombre,
-//   createdAt,
-//   descripcion,
-//   integrantes,
-//   cantidad_integrantes,
+  chat,
   onClick,
 }: CardChatGrupalProps) => {
+  const { historial_mensajes, link_foto, nombre } = chat;
+  const ultimoMensaje = historial_mensajes?.[0];
+  const tieneHistorial = ultimoMensaje && historial_mensajes.length > 0;
+
   return (
     <div
-      className="flex items-center p-3 mb-2 bg-white rounded-lg shadow-sm cursor-pointer hover:bg-gray-100"
-      onClick={(e) => handleOnClik(id_chat, onClick, e)}
+      className="w-full h-[60px] flex items-center p-3 mb-2 bg-white 
+      rounded-full shadow-sm cursor-pointer hover:bg-gray-100 flex-row 
+      gap-3 px-4"
+      onClick={(e) => handleOnClik(chat, onClick, e)}
+      title={tieneHistorial ? (ultimoMensaje.descripcion || 'Sin descripción') : 'Sin mensajes aún'}
     >
       {/* Imagen de perfil */}
-      <img
-        src={link_foto ?? ''}
-        alt={nombre}
-        className="w-12 h-12 rounded-full mr-3 object-cover"
+      <FotoPerfil
+        link_foto={link_foto}
+        nombre={nombre}
+        verPerfil={false}
+        className="size-[42px] flex-shrink-0"
       />
 
       {/* Nombre y último mensaje */}
-      <div className="flex-1">
-        <p className="font-semibold text-gray-800">{nombre}</p>
+      <div className="flex-1 min-w-0">
+        <p className="font-semibold text-gray-800 truncate">{nombre}</p>
         <p className="text-sm text-gray-500 truncate">
-          {historial_mensajes![0].descripcion ?? '...'}
+          {tieneHistorial ? ultimoMensaje.descripcion : 'Sin mensajes aún'}
         </p>
       </div>
 
       {/* Hora del último mensaje */}
-      <span className="text-xs text-gray-400">
-        {formatLocalDate(historial_mensajes![0].createdAt, 'time-date')}
-      </span>
+      {tieneHistorial && (
+        <span className="text-xs text-gray-400 ml-2 flex-shrink-0">
+          {formatLocalDate(ultimoMensaje.createdAt, 'time-date')}
+        </span>
+      )}
     </div>
   );
 };

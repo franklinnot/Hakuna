@@ -34,4 +34,28 @@ export class ChatsService {
     const { data } = await api.get(`${this.ROUTE}/get-privado/${id_chat}`);
     return data;
   };
+
+  public static createChatGrupal = async (
+    datosGrupo: {
+      nombre: string;
+      descripcion: string;
+      foto?: string;
+      integrantes: { id_usuario: string }[];
+    }
+  ): Promise<IRespuesta<IChatGrupalResponse>> => {
+    const { data } = await api.post(`${this.ROUTE}/create-grupal`, datosGrupo);
+    return data;
+  };
+
+  public static updateChatGrupal = async (
+    id_chat: string,
+    datosActualizacion: {
+      nombre?: string;
+      descripcion?: string;
+      foto?: string | null;
+    }
+  ): Promise<IRespuesta<IChatGrupalResponse>> => {
+    const { data } = await api.put(`${this.ROUTE}/update-grupal/${id_chat}`, datosActualizacion);
+    return data;
+  };
 }

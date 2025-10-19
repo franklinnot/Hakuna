@@ -28,6 +28,10 @@ export interface IUseAuthStore {
     id_chat: string,
     nuevoMensaje: IMensajeResponse,
   ) => void;
+  updateMensajesChatGrupal: (
+    id_chat: string,
+    nuevoMensaje: IMensajeResponse,
+  ) => void;
 
   // acciones
   setView: (view: Paginas) => void;
@@ -39,6 +43,8 @@ export interface IUseAuthStore {
   replaceTempChat: (tempId: string, realChat: IChatPrivadoResponse) => void;
   removeTempChat: (tempId: string) => void;
   setChatsGrupales: (data: IChatGrupalResponse[]) => void;
+  addChatGrupal: (data: IChatGrupalResponse) => void;
+  updateChatGrupal: (data: IChatGrupalResponse) => void;
   setChatPrivadoActivo: (data: IChatPrivadoResponse) => void;
   setChatGrupalActivo: (data: IChatGrupalResponse) => void;
   logout: () => void;

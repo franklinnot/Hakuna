@@ -33,6 +33,33 @@ export const useAuthStore = create<IUseAuthStore>()(
       setTipoChatsActivo: (data) => set({ tipoChatsActivo: data }),
       setChatsPrivados: (data) => set({ chatsPrivados: data }),
       setChatsGrupales: (data) => set({ chatsGrupales: data }),
+      addChatGrupal: (data) =>
+        set((state) => {
+          const chatsActuales = state.chatsGrupales ?? [];
+          // Evitar duplicados por id_chat
+          const exists = chatsActuales.some((c) => c.id_chat === data.id_chat);
+          if (exists) return { chatsGrupales: chatsActuales };
+          // Agregar al inicio de la lista para que aparezca primero
+          return { chatsGrupales: [data, ...chatsActuales] };
+        }),
+      updateChatGrupal: (data) =>
+        set((state) => {
+          const chatsActuales = state.chatsGrupales ?? [];
+          const chatsActualizados = chatsActuales.map((chat) =>
+            chat.id_chat === data.id_chat ? data : chat
+          );
+          
+          // También actualizar el chat grupal activo si es el mismo
+          const chatGrupalActivoActualizado = 
+            state.chatGrupalActivo?.id_chat === data.id_chat 
+              ? data 
+              : state.chatGrupalActivo;
+          
+          return { 
+            chatsGrupales: chatsActualizados,
+            chatGrupalActivo: chatGrupalActivoActualizado
+          };
+        }),
       setChatPrivadoActivo: (data) => set({ chatPrivadoActivo: data }),
       setChatGrupalActivo: (data) => set({ chatGrupalActivo: data }),
 
@@ -133,6 +160,51 @@ export const useAuthStore = create<IUseAuthStore>()(
               : state.chatPrivadoActivo;
 
           return { chatsPrivados: chatsActualizados, chatPrivadoActivo };
+        }),
+
+      updateMensajesChatGrupal: (
+        id_chat: string,
+        nuevoMensaje: IMensajeResponse,
+      ) =>
+        set((state) => {
+          const chatsActualizados =
+            state.chatsGrupales?.map((chat) => {
+              if (chat.id_chat !== id_chat) return chat;
+
+              // evitar duplicados de mensajes por id_mensaje
+              const historialActualizado = [
+                ...(chat.historial_mensajes ?? []).filter(
+                  (m) => m.id_mensaje !== nuevoMensaje.id_mensaje,
+                ),
+                nuevoMensaje,
+              ];
+
+              // crear una copia del chat con el nuevo historial y el último mensaje actualizado
+              const chatActualizado = {
+                ...chat,
+                historial_mensajes: historialActualizado,
+                ultimo_mensaje: nuevoMensaje,
+              };
+
+              return chatActualizado;
+            }) ?? state.chatsGrupales;
+
+          // si el chat activo es el mismo, también lo actualizamos
+          const chatGrupalActivo =
+            state.chatGrupalActivo?.id_chat === id_chat
+              ? {
+                  ...state.chatGrupalActivo,
+                  historial_mensajes: [
+                    ...(
+                      state.chatGrupalActivo.historial_mensajes ?? []
+                    ).filter((m) => m.id_mensaje !== nuevoMensaje.id_mensaje),
+                    nuevoMensaje,
+                  ],
+                  ultimo_mensaje: nuevoMensaje,
+                }
+              : state.chatGrupalActivo;
+
+          return { chatsGrupales: chatsActualizados, chatGrupalActivo };
         }),
 
       logout: () =>
