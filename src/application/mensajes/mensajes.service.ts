@@ -9,7 +9,13 @@ export class MensajesService {
   public static enviarMensajePrivado = async (
     dto: EnviarMensajePrivadoDto,
   ): Promise<IRespuesta<IMensajeResponse>> => {
-    const { data } = await api.post(`${this.ROUTE}/privado`, dto);
+    const { data } = await api.post(
+      `${this.ROUTE}/privado/${dto.id_usuarioB}`,
+      {
+        descripcion: dto.descripcion,
+        archivos: dto.archivos,
+      },
+    );
     return data;
   };
 

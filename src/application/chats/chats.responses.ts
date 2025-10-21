@@ -21,6 +21,7 @@ export type IIntegranteGrupalResponse = {
 export interface IChatGrupalResponse {
   id_chat: string;
   historial_mensajes: IMensajeResponse[] | null;
+  ultimo_mensaje?: IMensajeResponse | null;
   createdAt: Date;
   link_foto: string | null;
   nombre: string;

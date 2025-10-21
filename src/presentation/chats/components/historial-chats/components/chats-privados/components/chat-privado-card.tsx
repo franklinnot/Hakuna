@@ -2,6 +2,7 @@ import { IChatPrivadoResponse } from '../../../../../../../application/chats/cha
 import { IUsuarioResponse } from '../../../../../../../application/usuarios/usuarios.responses';
 import { formatLocalDate } from '../../../../../../../shared/application/mappers/utc-to-localdate';
 import { FotoPerfil } from '../../../../../../../shared/presentation/components/ui/foto-perfil';
+import { SkeletonText } from '../../../../../../../shared/presentation/components/ui/skeleton-text';
 
 export interface CardChatPrivadoProps {
   chat: IChatPrivadoResponse;
@@ -15,73 +16,67 @@ export const ChatPrivadoCard = ({
   usuarioA,
 }: CardChatPrivadoProps) => {
   const usuarioB = chat.usuarioB;
-  const today = new Date();
-
-  let hora: Date | string | null = null;
-  let fecha: Date | string | null = null;
-  let fecha_mensaje: Date = new Date();
   const mensaje = chat.ultimo_mensaje;
+
+  const isLoading = !mensaje;
+  let hora: string | null = null;
+  let fecha: string | null = null;
   let descripcion: string | null = '';
+
   if (mensaje) {
-    descripcion = mensaje.descripcion;
-    fecha_mensaje = new Date(mensaje.createdAt);
+    const fecha_mensaje = new Date(mensaje.createdAt);
     hora = formatLocalDate(fecha_mensaje, 'time')!;
     fecha = formatLocalDate(fecha_mensaje, 'date')!;
+    descripcion = mensaje.descripcion;
+
+    // --- Mostrar fecha solo si el mensaje NO es de hoy ---
+    const hoy = new Date();
+    const esMismoDia =
+      fecha_mensaje.getFullYear() === hoy.getFullYear() &&
+      fecha_mensaje.getMonth() === hoy.getMonth() &&
+      fecha_mensaje.getDate() === hoy.getDate();
+
+    if (esMismoDia) {
+      fecha = null; // no mostrar fecha
+    }
   }
 
   return (
     <div
       className="w-full h-[60px] flex items-center p-3 mb-2 bg-white 
-      rounded-full shadow-sm cursor-pointer hover:bg-gray-100 flex-row 
-      gap-3 px-4"
+      rounded-full shadow-sm cursor-pointer hover:bg-gray-100 flex-row gap-3 px-4"
       onClick={(e) => {
         e.preventDefault();
         onClick(chat);
       }}
-      title={descripcion || ''}
     >
-      {/* Imagen de perfil */}
       <FotoPerfil
         link_foto={usuarioB.link_foto}
         className="size-[42px]"
         nombre={usuarioB.nombre}
       />
 
-      {/* Nombre y último mensaje */}
       <div className="flex-1 min-w-0">
         <p className="font-semibold text-gray-800 truncate">
           {usuarioB.nombre}
         </p>
-        {mensaje?.id_usuario == usuarioA.id_usuario ? (
-          <div
-            className="text-sm text-gray-500 flex flex-row gap-1 
-          overflow-hidden"
-          >
+
+        {isLoading ? (
+          <SkeletonText width="70%" height={14} className="mt-1" />
+        ) : mensaje?.id_usuario === usuarioA.id_usuario ? (
+          <div className="text-sm text-gray-500 flex flex-row gap-1 overflow-hidden">
             <span className="shrink-0">Tú:</span>
-            <p
-              className="truncate whitespace-nowrap overflow-hidden 
-            text-ellipsis"
-            >
-              {descripcion}
-            </p>
+            <p className="truncate">{descripcion}</p>
           </div>
         ) : (
-          <p
-            className="text-sm text-gray-500 truncate whitespace-nowrap 
-          overflow-hidden text-ellipsis"
-          >
-            {descripcion}
-          </p>
+          <p className="text-sm text-gray-500 truncate">{descripcion}</p>
         )}
       </div>
 
-      {/* Hora del último mensaje */}
-      {fecha && hora && (
+      {!isLoading && hora && (
         <div className="flex flex-col justify-end text-right">
-          <span className="text-xs text-gray-400">{hora.toString()}</span>
-          {fecha_mensaje.getDay() != today.getDay() && (
-            <span className="text-xs text-gray-400">{fecha.toString()}</span>
-          )}
+          <span className="text-xs text-gray-400">{hora}</span>
+          {fecha && <span className="text-xs text-gray-400">{fecha}</span>}
         </div>
       )}
     </div>

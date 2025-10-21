@@ -1,61 +1,30 @@
 import { useState } from 'react';
-import { useAuthStore } from '../../../application/auth/hooks/useAuthStore';
-import { AuthService } from '../../../application/auth/auth.service';
 import { Button } from '../../../shared/presentation/components/ui/button';
 import { Input } from '../../../shared/presentation/components/ui/input';
-import { InputChange } from '../../../shared/presentation/html.types';
-import { ErrorResponse } from '../../../shared/application/response';
-import {
-  UserIcon,
-  LockClosedIcon,
-  IdentificationIcon,
-} from '@heroicons/react/16/solid';
-import { RegisterUsuarioSchema } from '../../../application/auth/auth.dtos';
 import { ErrorDisplay } from '../../../shared/presentation/components/ui/errors/error-display';
 import { UploadFotoPerfil } from '../../../shared/presentation/components/ui/upload-foto-perfi';
+import {
+  IdentificationIcon,
+  UserIcon,
+  LockClosedIcon,
+} from '@heroicons/react/16/solid';
+import { InputChange } from '../../../shared/presentation/html.types';
+import { useAuthActions } from '../../../application/auth/hooks/useAuthActions';
+import { ErrorResponse } from '../../../shared/application/response';
 
 export const RegisterForm = ({ switchTo }: { switchTo: () => void }) => {
-  const { setSession } = useAuthStore();
   const [foto, setFoto] = useState<string | null | undefined>(undefined);
   const [nombre, setNombre] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState<ErrorResponse>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<ErrorResponse>(null);
+  const { register } = useAuthActions();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
-    setIsLoading(true);
-
-    const result = RegisterUsuarioSchema.safeParse({
-      foto,
-      nombre,
-      username,
-      password,
-    });
-
-    if (!result.success) {
-      const errors = result.error.issues.map((i) => i.message);
-      setError(errors);
-      setIsLoading(false);
-      return;
-    }
-
-    try {
-      const dto = result.data;
-      const response = await AuthService.register(dto);
-      if (response.success && response.data) {
-        setSession(response.data);
-      } else {
-        setError(response.error);
-      }
-    } catch (err: unknown) {
-      console.error('Error en registro:', err);
-      setError('Hubo un error al registrarse');
-    } finally {
-      setIsLoading(false);
-    }
+    await register(nombre, username, password, foto, setIsLoading, setError);
   };
 
   return (
@@ -63,12 +32,10 @@ export const RegisterForm = ({ switchTo }: { switchTo: () => void }) => {
       onSubmit={handleSubmit}
       className="flex flex-col gap-5 px-4 py-2 w-[300px] items-center"
     >
-      {/* foto */}
       <UploadFotoPerfil initialUrl={undefined} onChange={setFoto} />
 
-      {/* nombre */}
       <div className="block w-full relative mt-3">
-        <IdentificationIcon className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
+        <IdentificationIcon className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
         <Input
           placeholder="Nombre"
           value={nombre}
@@ -80,9 +47,8 @@ export const RegisterForm = ({ switchTo }: { switchTo: () => void }) => {
         />
       </div>
 
-      {/* username */}
       <div className="block w-full relative">
-        <UserIcon className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
+        <UserIcon className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
         <Input
           placeholder="Nombre de usuario"
           value={username}
@@ -95,13 +61,10 @@ export const RegisterForm = ({ switchTo }: { switchTo: () => void }) => {
         />
       </div>
 
-      {/* password */}
       <div className="block w-full relative">
-        <LockClosedIcon className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
+        <LockClosedIcon className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
         <Input
           type="password"
-          autoComplete="off"
-          spellCheck="false"
           placeholder="Contraseña"
           value={password}
           onChange={(e: InputChange) => setPassword(e.target.value)}
@@ -111,7 +74,6 @@ export const RegisterForm = ({ switchTo }: { switchTo: () => void }) => {
         />
       </div>
 
-      {/* Errores  */}
       {error && <ErrorDisplay error={error} />}
 
       <Button type="submit" disabled={isLoading} className="mt-2">

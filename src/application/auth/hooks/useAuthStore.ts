@@ -26,7 +26,7 @@ export const useAuthStore = create<IUseAuthStore>()(
           usuario,
           token: token,
           isAuthenticated: true,
-          view: Paginas.CHATS,
+          // view: Paginas.CHATS,
         }),
 
       setUsuario: (data) => set({ usuario: data }),

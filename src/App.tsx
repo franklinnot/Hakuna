@@ -3,14 +3,14 @@ import { useAuthStore } from './application/auth/hooks/useAuthStore';
 import { InactiveTab } from './shared/presentation/pages/inactive-tab.page';
 import { PublicPage } from './presentation/public/public.page';
 import { ChatsPage } from './presentation/chats/chats.page';
+import { Paginas } from './shared/domain/enums';
 
 function App() {
   const { isTabActive, claimSession } = useTabControl();
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
-  const token = useAuthStore((state) => state.token);
+  const view = useAuthStore((state) => state.view);
 
   const renderContent = () => {
-    if (!isAuthenticated || !token) {
+    if (view == Paginas.PUBLIC) {
       return <PublicPage />;
     }
 
