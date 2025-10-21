@@ -9,7 +9,7 @@ export class ChatsService {
     id_usuarioB: string,
   ): Promise<IRespuesta<IChatPrivadoResponse>> => {
     const { data } = await api.post(
-      `${this.ROUTE}/create-privado/${id_usuarioB}`,
+      `${this.ROUTE}/privado/${id_usuarioB}`,
     );
     return data;
   };
@@ -17,21 +17,21 @@ export class ChatsService {
   public static getChatsPrivados = async (): Promise<
     IRespuesta<IChatPrivadoResponse[]>
   > => {
-    const { data } = await api.get(`${this.ROUTE}/get-privados`);
+    const { data } = await api.get(`${this.ROUTE}/privados`);
     return data;
   };
 
   public static getChatsGrupales = async (): Promise<
     IRespuesta<IChatGrupalResponse[]>
   > => {
-    const { data } = await api.get(`${this.ROUTE}/get-grupales`);
+    const { data } = await api.get(`${this.ROUTE}/grupales`);
     return data;
   };
 
   public static getChatPrivado = async (
     id_chat: string,
   ): Promise<IRespuesta<IChatPrivadoResponse>> => {
-    const { data } = await api.get(`${this.ROUTE}/get-privado/${id_chat}`);
+    const { data } = await api.get(`${this.ROUTE}/privado/${id_chat}`);
     return data;
   };
 
@@ -43,7 +43,7 @@ export class ChatsService {
       integrantes: { id_usuario: string }[];
     }
   ): Promise<IRespuesta<IChatGrupalResponse>> => {
-    const { data } = await api.post(`${this.ROUTE}/create-grupal`, datosGrupo);
+    const { data } = await api.post(`${this.ROUTE}/grupal`, datosGrupo);
     return data;
   };
 
@@ -55,7 +55,7 @@ export class ChatsService {
       foto?: string | null;
     }
   ): Promise<IRespuesta<IChatGrupalResponse>> => {
-    const { data } = await api.put(`${this.ROUTE}/update-grupal/${id_chat}`, datosActualizacion);
+    const { data } = await api.put(`${this.ROUTE}/grupal/${id_chat}`, datosActualizacion);
     return data;
   };
 }
