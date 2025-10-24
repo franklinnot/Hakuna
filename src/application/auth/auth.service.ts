@@ -9,7 +9,7 @@ export class AuthService {
   public static register = async (
     dto: RegisterUsuarioDto,
   ): Promise<IRespuesta<IAuthResponse>> => {
-    const { data } = await api.post(`${this.ROUTE}/register`, dto);
+    const { data } = await api.post(`${this.ROUTE}`, dto);
     return data;
   };
 
