@@ -1,11 +1,11 @@
-import { IUsuarioResponse } from '../../usuarios/usuarios.responses';
-import { IAuthResponse } from '../auth.responses';
-import { Paginas, TipoChats } from '../../../shared/domain/enums';
+import { IUsuarioResponse } from '../../../usuarios/usuarios.responses';
+import { IAuthResponse } from '../../auth.responses';
+import { Paginas, TipoChats } from '../../../../shared/domain/enums';
 import {
   IChatGrupalResponse,
   IChatPrivadoResponse,
-} from '../../chats/chats.responses';
-import { IMensajeResponse } from '../../mensajes/mensajes.responses';
+} from '../../../chats/chats.responses';
+import { IMensajeResponse } from '../../../mensajes/mensajes.responses';
 
 export interface IUseAuthStore {
   usuario: IUsuarioResponse | null;

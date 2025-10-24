@@ -4,7 +4,7 @@ import {
   ExclamationTriangleIcon,
   PaperAirplaneIcon,
 } from '@heroicons/react/24/solid';
-import { useMensajesFlow } from '../../../../../application/mensajes/hooks/useMensajesFlow';
+import { useMensajesPrivadosFlow } from './hooks/useMensajesPrivadosFlow';
 import { FotoPerfil } from '../../../../../shared/presentation/components/ui/foto-perfil';
 import { IChatPrivadoResponse } from '../../../../../application/chats/chats.responses';
 import { IUsuarioResponse } from '../../../../../application/usuarios/usuarios.responses';
@@ -22,7 +22,7 @@ export const MensajesPrivados = ({
   mensajesIniciales,
 }: MensajesPrivadosProps) => {
   const { mensajes, descripcion, setDescripcion, handleSend, scrollRef } =
-    useMensajesFlow(chat, usuario, mensajesIniciales);
+    useMensajesPrivadosFlow(chat, usuario, mensajesIniciales);
 
   return (
     <section className="flex flex-col w-full h-full rounded-3xl overflow-hidden shadow-xl bg-white">

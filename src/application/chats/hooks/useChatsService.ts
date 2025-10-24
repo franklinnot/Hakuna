@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ChatsService } from '../chats.service';
-import { useAuthStore } from '../../auth/hooks/useAuthStore';
+import { useAuthStore } from '../../auth/hooks/useAuthStore/useAuthStore';
 import type { ErrorResponse } from '../../../shared/application/response';
 
 export const useChatsService = () => {

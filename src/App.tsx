@@ -1,5 +1,5 @@
-import { useTabControl } from './shared/application/hooks/useTabControl';
-import { useAuthStore } from './application/auth/hooks/useAuthStore';
+import { useTabControl } from './shared/presentation/hooks/useTabControl';
+import { useAuthStore } from './application/auth/hooks/useAuthStore/useAuthStore';
 import { InactiveTab } from './shared/presentation/pages/inactive-tab.page';
 import { PublicPage } from './presentation/public/public.page';
 import { ChatsPage } from './presentation/chats/chats.page';

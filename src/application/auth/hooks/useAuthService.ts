@@ -1,12 +1,16 @@
 import { AuthService } from '../auth.service';
-import { useAuthStore } from './useAuthStore';
+import { useAuthStore } from './useAuthStore/useAuthStore';
 import { useChatsService } from '../../chats/hooks/useChatsService';
 import { LoginSchema, RegisterUsuarioSchema } from '../auth.dtos';
 import type { ErrorResponse } from '../../../shared/application/response';
 import { Paginas } from '../../../shared/domain/enums';
+import {
+  connectSocket,
+  disconnectSocket,
+} from '../../../infraestructure/socket.client';
 
-export const useAuthActions = () => {
-  const { setSession, setView } = useAuthStore();
+export const useAuthService = () => {
+  const { setSession, setView, logout } = useAuthStore();
   const { getChats } = useChatsService();
 
   const login = async (
@@ -33,7 +37,11 @@ export const useAuthActions = () => {
         return;
       }
 
+      // guardar sesión
       setSession(response.data);
+
+      // conectar socket con token JWT
+      connectSocket(response.data.token);
 
       // cargar chats
       await getChats();
@@ -79,7 +87,12 @@ export const useAuthActions = () => {
         return;
       }
 
+      // guardar sesión
       setSession(response.data);
+
+      // conectar socket
+      connectSocket(response.data.token);
+
       await getChats();
       setView(Paginas.CHATS);
     } catch (err) {
@@ -90,5 +103,11 @@ export const useAuthActions = () => {
     }
   };
 
-  return { login, register };
+  // desconectar socket al cerrar sesión
+  const logoutComplete = () => {
+    disconnectSocket();
+    logout();
+  };
+
+  return { login, register, logoutComplete };
 };

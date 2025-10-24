@@ -5,7 +5,7 @@ import { ChatBubbleLeftIcon } from '@heroicons/react/24/solid';
 import { Image } from '../../../../../shared/presentation/components/ui/img';
 import { UsuariosService } from '../../../../../application/usuarios/usuarios.service';
 import { IUsuarioResponse } from '../../../../../application/usuarios/usuarios.responses';
-import { useAuthStore } from '../../../../../application/auth/hooks/useAuthStore';
+import { useAuthStore } from '../../../../../application/auth/hooks/useAuthStore/useAuthStore';
 import { IChatPrivadoResponse } from '../../../../../application/chats/chats.responses';
 
 type IChatPrivadoResponseTemp = {

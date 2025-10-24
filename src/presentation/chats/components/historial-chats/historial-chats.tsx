@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useAuthStore } from '../../../../application/auth/hooks/useAuthStore';
+import { useAuthStore } from '../../../../application/auth/hooks/useAuthStore/useAuthStore';
 import { TipoChats } from '../../../../shared/domain/enums';
 import { Input } from '../../../../shared/presentation/components/ui/input';
 import { ChatsGrupales } from './components/chats-grupales/chats-grupales';

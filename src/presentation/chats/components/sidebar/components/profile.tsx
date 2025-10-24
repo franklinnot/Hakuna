@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useAuthStore } from '../../../../../application/auth/hooks/useAuthStore';
+import { useAuthStore } from '../../../../../application/auth/hooks/useAuthStore/useAuthStore';
 import { Input } from '../../../../../shared/presentation/components/ui/input';
 import { UpdateUsuarioSchema } from '../../../../../application/usuarios/usuarios.dtos';
 import { UsuariosService } from '../../../../../application/usuarios/usuarios.service';

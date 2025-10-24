@@ -1,11 +1,11 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { useChatsFlow } from '../../../../../../application/chats/hooks/useChatsFlow';
+import { useChatsPrivadosFlow } from './hooks/useChatsPrivadosFlow';
 import { ChatPrivadoCard } from './components/chat-privado-card';
-import { useAuthStore } from '../../../../../../application/auth/hooks/useAuthStore';
+import { useAuthStore } from '../../../../../../application/auth/hooks/useAuthStore/useAuthStore';
 import type { IChatPrivadoResponse } from '../../../../../../application/chats/chats.responses';
 
 export const ChatsPrivados = () => {
-  const merged = useChatsFlow(); 
+  const merged = useChatsPrivadosFlow(); 
   const usuario = useAuthStore((s) => s.usuario);
   const setChatPrivadoActivo = useAuthStore((s) => s.setChatPrivadoActivo);
 

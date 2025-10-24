@@ -5,16 +5,17 @@ import {
 } from '@heroicons/react/24/outline';
 import { Button } from '../../../../shared/presentation/components/ui/button';
 import { ArrowLeftEndOnRectangleIcon } from '@heroicons/react/24/solid';
-import { useAuthStore } from '../../../../application/auth/hooks/useAuthStore';
+import { useAuthStore } from '../../../../application/auth/hooks/useAuthStore/useAuthStore';
 import { Profile } from './components/profile';
 import { AddUser } from './components/add-user';
 import { Modal } from '../../../../shared/presentation/components/ui/modal/modal';
 import { TipoChats } from '../../../../shared/domain/enums';
 import { useState, useRef } from 'react';
 import { FotoPerfil } from '../../../../shared/presentation/components/ui/foto-perfil';
+import { useAuthService } from '../../../../application/auth/hooks/useAuthService';
 
 export const Sidebar = () => {
-  const logout = useAuthStore((state) => state.logout);
+  const { logoutComplete } = useAuthService();
   const setTipoChatsActivo = useAuthStore((state) => state.setTipoChatsActivo);
   const tipoChatsActivo = useAuthStore((state) => state.tipoChatsActivo);
   const usuario = useAuthStore((state) => state.usuario);
@@ -115,7 +116,7 @@ export const Sidebar = () => {
         className="size-12 p-2 flex items-center justify-center 
         mt-auto bg-[var(--green-primary)] hover:bg-[var(--green-dark)] hover:scale-125
         transition-transform duration-200 ease-in-out"
-        onClick={logout}
+        onClick={() => logoutComplete()}
         title="Cerrar sesión"
       >
         <ArrowLeftEndOnRectangleIcon className="size-[24px] stroke-[1.5]" />

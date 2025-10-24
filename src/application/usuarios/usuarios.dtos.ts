@@ -1,7 +1,7 @@
 import z from 'zod';
 
 export const UpdateUsuarioSchema = z.object({
-  foto: z.string().base64('La imagen no es válida.').nullable().optional(),
+  foto: z.base64('La imagen no es válida.').nullable().optional(),
   nombre: z.string().min(2, 'Ingresa tu nombre completo.').optional(),
   username: z
     .string()

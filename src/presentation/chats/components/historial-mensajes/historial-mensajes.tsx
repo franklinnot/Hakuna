@@ -1,4 +1,4 @@
-import { useAuthStore } from '../../../../application/auth/hooks/useAuthStore';
+import { useAuthStore } from '../../../../application/auth/hooks/useAuthStore/useAuthStore';
 import { TipoChats } from '../../../../shared/domain/enums';
 import { MensajesPrivados } from './mensajes-privados/mensajes-privados';
 import { MensajesGrupales } from './mensajes-grupales/mensajes-grupales';

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Button } from '../../../shared/presentation/components/ui/button';
 import { Input } from '../../../shared/presentation/components/ui/input';
 import { ErrorDisplay } from '../../../shared/presentation/components/ui/errors/error-display';
-import { useAuthActions } from '../../../application/auth/hooks/useAuthActions';
+import { useAuthService } from '../../../application/auth/hooks/useAuthService';
 import { UserIcon, LockClosedIcon } from '@heroicons/react/16/solid';
 import { InputChange } from '../../../shared/presentation/html.types';
 import { LoadingScreen } from '../../../shared/presentation/components/ui/loading-screen';
@@ -14,7 +14,7 @@ export const LoginForm = ({ switchTo }: { switchTo: () => void }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<ErrorResponse>(null);
 
-  const { login } = useAuthActions();
+  const { login } = useAuthService();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

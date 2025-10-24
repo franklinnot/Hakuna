@@ -1,4 +1,5 @@
 import api from '../api';
+import { apiSocket } from '../../infraestructure/api.socket';
 import { IRespuesta } from '../../shared/application/response';
 import { EnviarMensajePrivadoDto } from './mensajes.dtos';
 import { IMensajeResponse } from './mensajes.responses';
@@ -9,7 +10,7 @@ export class MensajesService {
   public static enviarMensajePrivado = async (
     dto: EnviarMensajePrivadoDto,
   ): Promise<IRespuesta<IMensajeResponse>> => {
-    const { data } = await api.post(
+    const { data } = await apiSocket.post(
       `${this.ROUTE}/privado/${dto.id_usuarioB}`,
       {
         descripcion: dto.descripcion,

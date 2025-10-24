@@ -9,7 +9,7 @@ import {
   LockClosedIcon,
 } from '@heroicons/react/16/solid';
 import { InputChange } from '../../../shared/presentation/html.types';
-import { useAuthActions } from '../../../application/auth/hooks/useAuthActions';
+import { useAuthService } from '../../../application/auth/hooks/useAuthService';
 import { ErrorResponse } from '../../../shared/application/response';
 
 export const RegisterForm = ({ switchTo }: { switchTo: () => void }) => {
@@ -19,7 +19,7 @@ export const RegisterForm = ({ switchTo }: { switchTo: () => void }) => {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<ErrorResponse>(null);
-  const { register } = useAuthActions();
+  const { register } = useAuthService();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

@@ -1,8 +1,8 @@
-import { useAuthStore } from '../../auth/hooks/useAuthStore';
+import { useAuthStore } from '../../../../../../../application/auth/hooks/useAuthStore/useAuthStore';
 import { useMemo } from 'react';
-import type { IChatPrivadoResponse } from '../chats.responses';
+import type { IChatPrivadoResponse } from '../../../../../../../application/chats/chats.responses';
 
-export const useChatsFlow = () => {
+export const useChatsPrivadosFlow = () => {
   const chatsPrivados = useAuthStore((s) => s.chatsPrivados);
   const chatsTemporales = useAuthStore((s) => s.chatsPrivadosTemporales);
 

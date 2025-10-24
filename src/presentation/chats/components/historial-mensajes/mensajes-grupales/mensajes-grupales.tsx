@@ -5,11 +5,15 @@ import { IMensajeResponse } from '../../../../../application/mensajes/mensajes.r
 import { FotoPerfil } from '../../../../../shared/presentation/components/ui/foto-perfil';
 import { IUsuarioResponse } from '../../../../../application/usuarios/usuarios.responses';
 import { Estado } from '../../../../../shared/domain/enums';
-import { EllipsisVerticalIcon, InformationCircleIcon, ArrowLeftOnRectangleIcon } from '@heroicons/react/24/outline';
+import {
+  EllipsisVerticalIcon,
+  InformationCircleIcon,
+  ArrowLeftOnRectangleIcon,
+} from '@heroicons/react/24/outline';
 import { Modal } from '../../../../../shared/presentation/components/ui/modal/modal';
 import { InformacionGrupoModal } from './informacion-grupo-modal';
 import { ChatsService } from '../../../../../application/chats/chats.service';
-import { useAuthStore } from '../../../../../application/auth/hooks/useAuthStore';
+import { useAuthStore } from '../../../../../application/auth/hooks/useAuthStore/useAuthStore';
 
 type UIMessage = IMensajeResponse & {
   estado_envio?: 'sending' | 'sent' | 'error';
@@ -84,7 +88,7 @@ export const MensajesGrupales = ({
       descripcion: descripcion,
       has_files: !!archivos?.length,
       createdAt: new Date(),
-      archivos: null,
+      archivos: [],
       estado: Estado.HABILITADO,
       estado_envio: 'sending',
     };
@@ -146,14 +150,18 @@ export const MensajesGrupales = ({
   // Función para obtener el nombre del usuario que envió el mensaje
   const getNombreUsuario = (id_usuario: string) => {
     if (id_usuario === usuario.id_usuario) return 'Tú';
-    const integrante = chat.integrantes.find(i => i.id_usuario === id_usuario);
+    const integrante = chat.integrantes.find(
+      (i) => i.id_usuario === id_usuario,
+    );
     return integrante?.nombre || 'Usuario desconocido';
   };
 
   // Función para obtener la foto del usuario que envió el mensaje
   const getFotoUsuario = (id_usuario: string) => {
     if (id_usuario === usuario.id_usuario) return usuario.link_foto;
-    const integrante = chat.integrantes.find(i => i.id_usuario === id_usuario);
+    const integrante = chat.integrantes.find(
+      (i) => i.id_usuario === id_usuario,
+    );
     return integrante?.link_foto || null;
   };
 
@@ -182,7 +190,11 @@ export const MensajesGrupales = ({
     setIsConfigModalOpen(false);
   };
 
-  const handleUpdateGroup = async (name: string, description: string, photo?: string | null) => {
+  const handleUpdateGroup = async (
+    name: string,
+    description: string,
+    photo?: string | null,
+  ) => {
     try {
       const datosActualizacion: {
         nombre?: string;
@@ -206,8 +218,11 @@ export const MensajesGrupales = ({
         return;
       }
 
-      const response = await ChatsService.updateChatGrupal(chat.id_chat, datosActualizacion);
-      
+      const response = await ChatsService.updateChatGrupal(
+        chat.id_chat,
+        datosActualizacion,
+      );
+
       if (response.success && response.data) {
         // Actualizar el store con los nuevos datos
         updateChatGrupal(response.data);
@@ -248,7 +263,7 @@ export const MensajesGrupales = ({
             {chat.cantidad_integrantes} integrantes
           </span>
         </div>
-        
+
         {/* Botón de menú de tres puntos */}
         <button
           ref={menuButtonRef}
@@ -276,7 +291,7 @@ export const MensajesGrupales = ({
             const estadoEnvio = (m as UIMessage).estado_envio;
             const nombreUsuario = getNombreUsuario(m.id_usuario);
             const fotoUsuario = getFotoUsuario(m.id_usuario);
-            
+
             return (
               <div
                 key={m.id_mensaje}
@@ -292,7 +307,7 @@ export const MensajesGrupales = ({
                     className="size-8 flex-shrink-0 mr-2 mt-1"
                   />
                 )}
-                
+
                 <div
                   className={`max-w-[75%] px-3 py-2 rounded-2xl shadow-sm ${
                     esMio
@@ -301,13 +316,15 @@ export const MensajesGrupales = ({
                   }`}
                 >
                   {!esMio && (
-                    <p className={`text-xs font-semibold mb-1 ${
-                      esMio ? 'text-indigo-200' : 'text-gray-600'
-                    }`}>
+                    <p
+                      className={`text-xs font-semibold mb-1 ${
+                        esMio ? 'text-indigo-200' : 'text-gray-600'
+                      }`}
+                    >
                       {nombreUsuario}
                     </p>
                   )}
-                  
+
                   {m.descripcion && (
                     <p className="whitespace-pre-wrap break-words">
                       {m.descripcion}
@@ -348,7 +365,7 @@ export const MensajesGrupales = ({
                     )}
                   </div>
                 </div>
-                
+
                 {esMio && (
                   <FotoPerfil
                     link_foto={usuario.link_foto}
@@ -416,7 +433,7 @@ export const MensajesGrupales = ({
             <InformationCircleIcon className="h-5 w-5 text-gray-600" />
             <span className="text-gray-800 font-medium">Info del grupo</span>
           </button>
-          
+
           <button
             onClick={handleSalirGrupo}
             className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-50 transition-colors"
@@ -434,11 +451,11 @@ export const MensajesGrupales = ({
         groupName={chat.nombre}
         groupDescription={chat.descripcion || ''}
         groupPhoto={chat.link_foto}
-        members={chat.integrantes.map(integrante => ({
+        members={chat.integrantes.map((integrante) => ({
           id: integrante.id_usuario,
           name: integrante.nombre,
           avatar: integrante.link_foto,
-          isAdmin: integrante.is_admin
+          isAdmin: integrante.is_admin,
         }))}
         onUpdateGroup={handleUpdateGroup}
         onRemoveMember={handleRemoveMember}

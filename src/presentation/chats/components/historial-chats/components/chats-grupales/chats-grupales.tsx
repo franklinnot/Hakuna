@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { PlusIcon } from '@heroicons/react/24/outline';
-import { useAuthStore } from '../../../../../../application/auth/hooks/useAuthStore';
+import { useAuthStore } from '../../../../../../application/auth/hooks/useAuthStore/useAuthStore';
 import { ChatGrupalCard } from './components/chat-grupal-card';
 import { Modal } from '../../../../../../shared/presentation/components/ui/modal/modal';
 import { Button } from '../../../../../../shared/presentation/components/ui/button';
