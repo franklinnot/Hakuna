@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { SeleccionarUsuarios } from './seleccionar-usuarios';
 import { ConfigurarGrupoModal } from './configurar-grupo-modal';
-import { UsuarioSeleccionado } from '../types';
+import type { IUsuarioResponse } from '../../../../../../../application/usuarios/usuarios.responses';
 
 interface CrearGrupoModalProps {
   isOpen: boolean;
@@ -18,14 +18,14 @@ type Paso = 'seleccionar-usuarios' | 'configurar-grupo';
 
 export const CrearGrupoModal = ({ isOpen, onClose, onCrearGrupo }: CrearGrupoModalProps) => {
   const [pasoActual, setPasoActual] = useState<Paso>('seleccionar-usuarios');
-  const [usuariosSeleccionados, setUsuariosSeleccionados] = useState<UsuarioSeleccionado[]>([]);
+  const [usuariosSeleccionados, setUsuariosSeleccionados] = useState<IUsuarioResponse[]>([]);
   
   // Estados para la configuración del grupo (persisten durante toda la sesión)
   const [nombreGrupo, setNombreGrupo] = useState('');
   const [descripcionGrupo, setDescripcionGrupo] = useState('');
   const [fotoGrupo, setFotoGrupo] = useState<string | null | undefined>(undefined);
 
-  const handleSiguientePaso = (usuarios: UsuarioSeleccionado[]) => {
+  const handleSiguientePaso = (usuarios: IUsuarioResponse[]) => {
     setUsuariosSeleccionados(usuarios);
     setPasoActual('configurar-grupo');
   };

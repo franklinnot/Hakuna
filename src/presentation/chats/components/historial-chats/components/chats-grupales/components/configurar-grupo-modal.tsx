@@ -6,12 +6,12 @@ import {
   ArrowLeftIcon,
   UserGroupIcon,
 } from '@heroicons/react/24/outline';
-import { UsuarioSeleccionado } from '../types';
+import type { IUsuarioResponse } from '../../../../../../../application/usuarios/usuarios.responses';
 import { useAuthStore } from '../../../../../../../application/auth/hooks/useAuthStore';
 
 interface ConfigurarGrupoModalProps {
   isOpen: boolean;
-  usuarios: UsuarioSeleccionado[];
+  usuarios: IUsuarioResponse[];
   onClose: () => void;
   onVolver: () => void;
   onCrearGrupo: (datosGrupo: {
