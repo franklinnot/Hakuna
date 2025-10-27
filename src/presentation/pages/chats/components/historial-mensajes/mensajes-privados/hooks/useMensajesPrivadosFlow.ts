@@ -1,5 +1,5 @@
 import { AppStore } from '../../../../../../../application/store/app.store';
-import { useRef, useState, useLayoutEffect } from 'react';
+import { useRef, useState, useLayoutEffect, useMemo } from 'react';
 import { IMensajeResponse } from '../../../../../../../domain/responses/mensajes.responses';
 import { ICrearArchivo } from '../../../../../../../infraestructure/rest/mensajes/mensajes.dtos';
 import { IChatPrivadoResponse } from '../../../../../../../domain/responses/chats.responses';
@@ -24,13 +24,17 @@ export const useMensajesPrivadosFlow = (
         ?.historial_mensajes ?? [],
   );
 
-  const ordenar = (arr: IMensajeResponse[]) =>
-    [...arr].sort(
+  // filtrar duplicados y ordenar
+  const mensajes = useMemo(() => {
+    const map = new Map<string, IMensajeResponse>();
+    historial.forEach((m) => {
+      if (m.id_mensaje) map.set(m.id_mensaje, m); // usa id único
+    });
+    return Array.from(map.values()).sort(
       (a, b) =>
         new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
     );
-
-  const mensajes = ordenar(historial);
+  }, [historial]);
 
   // desplazamiento fluido al fondo tras render de nuevo mensaje
   useLayoutEffect(() => {
@@ -58,7 +62,6 @@ export const useMensajesPrivadosFlow = (
       console.error('Error en handleSend', err);
       setError({ message: 'Error al enviar el mensaje' });
     } finally {
-      //  limpieza tras el render del nuevo mensaje
       setTimeout(() => {
         setArchivos(undefined);
         setIsSending(false);

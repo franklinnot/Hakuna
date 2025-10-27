@@ -7,6 +7,7 @@ import { UsuariosService } from '../../../../../../infraestructure/rest/usuarios
 import { IUsuarioResponse } from '../../../../../../domain/responses/usuarios.responses';
 import { AppStore } from '../../../../../../application/store/app.store';
 import { IChatPrivadoResponse } from '../../../../../../domain/responses/chats.responses';
+import { v4 as uuidv4 } from 'uuid';
 
 export const AddUser = ({
   handleCloseModal,
@@ -59,7 +60,7 @@ export const AddUser = ({
       }
 
       // No existe → crear un chat temporal
-      const tempId = `temp-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+      const tempId = `temp-${uuidv4()}`;
 
       const tempChat: IChatPrivadoResponse = {
         id_chat: tempId,

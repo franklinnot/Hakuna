@@ -1,9 +1,10 @@
 import { AppStore } from '../../../../../../../../application/store/app.store';
-import { useMemo } from 'react';
+import { useMemo, useEffect, useState } from 'react';
 import type { IChatPrivadoResponse } from '../../../../../../../../domain/responses/chats.responses';
 
 export const useChatsPrivadosFlow = () => {
   const chatsPrivados = AppStore((s) => s.chatsPrivados);
+  const [mergedChats, setMergedChats] = useState<IChatPrivadoResponse[]>([]);
 
   // Combinar y ordenar chats
   const mergedAndSorted = useMemo(() => {
@@ -13,7 +14,7 @@ export const useChatsPrivadosFlow = () => {
     >();
 
     for (const c of chatsPrivados) {
-      if (!c.id_chat || c.historial_mensajes.length == 0) continue;
+      if (!c.id_chat || c.historial_mensajes.length === 0) continue;
 
       const conflict = Array.from(map.values()).find(
         (v) =>
@@ -21,7 +22,7 @@ export const useChatsPrivadosFlow = () => {
           v.usuarioB.id_usuario === c.usuarioB?.id_usuario,
       );
 
-      if (conflict && conflict.id_chat?.startsWith('temp-')) {
+      if (conflict && conflict.id_chat && conflict.is_temp) {
         map.delete(conflict.id_chat);
       }
 
@@ -40,5 +41,10 @@ export const useChatsPrivadosFlow = () => {
     }) as IChatPrivadoResponse[];
   }, [chatsPrivados]);
 
-  return mergedAndSorted;
+  // Actualizamos estado local cada vez que chatsPrivados cambie
+  useEffect(() => {
+    setMergedChats(mergedAndSorted);
+  }, [mergedAndSorted]);
+
+  return mergedChats;
 };

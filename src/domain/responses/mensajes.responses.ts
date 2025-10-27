@@ -14,3 +14,7 @@ export interface IMensajeResponse {
   //
   estado_envio?: EstadoEnvioMensaje;
 }
+
+export interface IMensajePrivadoResponse extends IMensajeResponse {
+  id_usuarioB: string; // quien lo recibe
+}
