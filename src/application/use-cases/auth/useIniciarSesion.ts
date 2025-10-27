@@ -44,14 +44,15 @@ export const useIniciarSesion = () => {
       setSession(response.data);
 
       const [chatsPrivados, chatsGrupales] = await getChats(setError);
+
+      // conectarse al socket
+      connectSocket(response.data.token);
+
       await getMensajes(
         setError,
         chatsPrivados as IChatPrivadoResponse[],
         chatsGrupales as IChatGrupalResponse[],
       );
-
-      // conectarse al socket
-      connectSocket(response.data.token);
 
       // ir a la vista principal
       setView(Paginas.CHATS);

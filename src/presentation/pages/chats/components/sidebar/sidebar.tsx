@@ -123,7 +123,7 @@ export const Sidebar = () => {
       </Button>
 
       {/* MODAL */}
-      {obtenerParentRef() && obtenerParentRef()?.current && (
+      {modalContent && (
         <ModalRelativo
           isOpen={modalContent !== null}
           onClose={handleCloseModal}

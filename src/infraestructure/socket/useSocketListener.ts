@@ -18,21 +18,68 @@ export const useSocketListener = () => {
       mensaje: IMensajePrivadoResponse,
     ) => {
       const usuario = AppStore.getState().usuario;
+      const chatsPrivados = AppStore.getState().chatsPrivados;
+      // console.log('[Socket] Chats privados', chatsPrivados);
+      // console.log('[Socket] Mensaje recibido', mensaje);
+
       // si la persona que envia es igual a la persona que esta logueada
       if (mensaje.id_usuario == usuario!.id_usuario) {
+        // si es que me esta llegando a mi mismo, pero desde otra sesion,  buscare ese chat
+        // y verificare si lo tengo
+
+        // va a existir si tengo algun chat con ese id o
+        // si en alguno de los mensajes tiene los mismos datos del que esta llegando y ademas el chat que tengo es temporal
+        const chatExistente = chatsPrivados.find(
+          (chat) =>
+            chat.id_chat == mensaje.id_chat ||
+            chat.usuarioB.id_usuario == mensaje.id_usuarioB ||
+            chat.historial_mensajes.some(
+              (m) =>
+                m.id_mensaje == mensaje.id_mensaje ||
+                m.id_chat == mensaje.id_chat ||
+                // m.id_usuario == mensaje.id_usuario ||
+                m.id_usuarioB == mensaje.id_usuarioB,
+            ),
+        );
+
+        // solo si no se encontro ese chat, lo agregaremos
+        if (!chatExistente) {
+          // console.log('[Socket] Chat no existente');
+          // me ha llegado a mi mismo, pero en otra esion
+          const rpta = await ChatsService.getChatPrivado(mensaje.id_chat);
+          if (!rpta.success || !rpta.data) return;
+          console.log('[Socket] YO MISMO - Nuevo chat privado', mensaje);
+          addChatPrivado({
+            ...rpta.data,
+            historial_mensajes: [mensaje],
+            ultimo_mensaje: mensaje,
+          });
+        } else {
+          console.log('[Socket] Chat existente', chatExistente);
+          addMensajeToChatPrivado(chatExistente.id_chat, mensaje);
+        }
         console.log('Llego mi mismo mensaje privado');
         return;
       } else {
         // si soy el usuario receptor, verificare si el mensaje que ha llegado pertenece
         // a uno de los chats que tengo localmente
-        const chatsPrivados = AppStore.getState().chatsPrivados;
         const chatExistente = chatsPrivados.find(
-          (chat) => chat.id_chat === mensaje.id_chat,
+          (chat) =>
+            chat.id_chat == mensaje.id_chat ||
+            chat.usuarioB.id_usuario == mensaje.id_usuarioB ||
+            chat.historial_mensajes.some(
+              (m) =>
+                m.id_mensaje == mensaje.id_mensaje ||
+                m.id_chat == mensaje.id_chat ||
+                m.id_usuario == mensaje.id_usuario 
+                // m.id_usuarioB == mensaje.id_usuarioB,
+            ),
         );
+
         if (!chatExistente) {
           const rpta = await ChatsService.getChatPrivado(mensaje.id_chat);
           if (!rpta.success || !rpta.data) return;
-          console.log('[Socket] Nuevo chat privado', mensaje);
+          console.log('[Socket] OTRO - Nuevo chat privado', mensaje);
           addChatPrivado({
             ...rpta.data,
             historial_mensajes: [mensaje],

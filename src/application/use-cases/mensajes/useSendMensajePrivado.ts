@@ -1,5 +1,4 @@
 import { MensajesService } from '../../../infraestructure/rest/mensajes/mensajes.service';
-import { ChatsService } from '../../../infraestructure/rest/chats/chats.service';
 import { AppStore } from '../../store/app.store';
 import { IMensajeResponse } from '../../../domain/responses/mensajes.responses';
 import { IChatPrivadoResponse } from '../../../domain/responses/chats.responses';
@@ -12,8 +11,6 @@ export const useSendMensajePrivado = () => {
     addMensajeToChatPrivado,
     updateMensajePrivado,
     replaceMensajePrivadoTemporal,
-    setIdChatActivo,
-    id_chatActivo,
   } = AppStore();
 
   const sendMensajePrivado = async (
@@ -58,48 +55,12 @@ export const useSendMensajePrivado = () => {
       }
 
       const serverMsg = resp.data as IMensajeResponse;
-      const serverChatId = serverMsg.id_chat;
 
       // reemplazar temporal por mensaje real
       replaceMensajePrivadoTemporal(chat.id_chat, tempId, {
         ...serverMsg,
         estado_envio: EstadoEnvioMensaje.SENT,
       } as IMensajeResponse);
-
-      // sincronizar chat temporal si es necesario
-      if (chat.id_chat != serverChatId) {
-        try {
-          const respChat = await ChatsService.getChatPrivado(serverChatId);
-          if (respChat.success && respChat.data) {
-            const chats = AppStore.getState().chatsPrivados.map((c: IChatPrivadoResponse) => {
-              if (c.id_chat !== chat.id_chat) return c;
-
-              const currentHistorial = c.historial_mensajes ?? [];
-              const newHistorial = currentHistorial.map((m) =>
-                m.id_mensaje === serverMsg.id_mensaje ||
-                m.id_mensaje.startsWith('temp-')
-                  ? serverMsg
-                  : m,
-              );
-
-              return {
-                ...c,
-                id_chat: serverChatId,
-                is_temp: false,
-                historial_mensajes: newHistorial,
-                ultimo_mensaje: newHistorial[newHistorial.length - 1],
-              } as IChatPrivadoResponse;
-            });
-            AppStore.setState({ chatsPrivados: chats });
-
-            if (id_chatActivo == chat.id_chat) {
-              setIdChatActivo(serverChatId);
-            }
-          }
-        } catch (err) {
-          console.error('Error sincronizando chat real:', err);
-        }
-      }
     } catch (err) {
       console.error('Error enviando mensaje:', err);
       updateMensajePrivado(tempId, {

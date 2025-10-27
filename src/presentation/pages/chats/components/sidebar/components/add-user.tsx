@@ -18,10 +18,6 @@ export const AddUser = ({
   const [results, setResults] = useState<IUsuarioResponse[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const chatsPrivados = AppStore((s) => s.chatsPrivados);
-  const addChatPrivado = AppStore((s) => s.addChatPrivado);
-  const setIdChatActivo = AppStore((s) => s.setIdChatActivo);
-
   // Buscar usuarios por nombre o username
   useEffect(() => {
     if (!query.trim()) {
@@ -48,22 +44,17 @@ export const AddUser = ({
   // verificar si ya hay un chat con ese usuario
   const handleSelectUser = useCallback(
     (user: IUsuarioResponse) => {
-      // Buscar si ya existe un chat con ese usuario
-      const existingChat = chatsPrivados.find(
+      const existingChat = AppStore.getState().chatsPrivados.find(
         (c) => c.usuarioB?.id_usuario === user.id_usuario,
       );
 
       if (existingChat) {
-        // Ya existe → activar
-        setIdChatActivo(existingChat.id_chat);
+        AppStore.getState().setIdChatActivo(existingChat.id_chat);
         return;
       }
 
-      // No existe → crear un chat temporal
-      const tempId = `temp-${uuidv4()}`;
-
       const tempChat: IChatPrivadoResponse = {
-        id_chat: tempId,
+        id_chat: `temp-${uuidv4()}`,
         usuarioB: user,
         historial_mensajes: [],
         ultimo_mensaje: null,
@@ -72,11 +63,11 @@ export const AddUser = ({
         is_temp: true,
       };
 
-      addChatPrivado(tempChat);
-      setIdChatActivo(tempChat.id_chat);
+      AppStore.getState().addChatPrivado(tempChat);
+      AppStore.getState().setIdChatActivo(tempChat.id_chat);
       handleCloseModal();
     },
-    [chatsPrivados, addChatPrivado, setIdChatActivo],
+    [handleCloseModal],
   );
 
   return (
@@ -119,9 +110,12 @@ export const AddUser = ({
 
             <Button
               className="w-10 h-10 p-0 flex items-center justify-center"
-              onClick={() => handleSelectUser(user)}
+              onClick={(e) => {
+                e.preventDefault();
+                handleSelectUser(user);
+              }}
             >
-              <ChatBubbleLeftIcon className="h-5 w-5" />
+              <ChatBubbleLeftIcon className="h-5 w-5 pointer-events-none" />
             </Button>
           </div>
         ))}

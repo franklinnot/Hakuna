@@ -1,10 +1,9 @@
 import { IUsuarioResponse } from './usuarios.responses';
 import { Estado } from '../enums';
-import { IMensajeResponse } from './mensajes.responses';
+import { IMensajePrivadoResponse, IMensajeResponse } from './mensajes.responses';
 
 export interface IChatResponse {
   id_chat: string;
-  historial_mensajes: IMensajeResponse[];
   createdAt: Date;
   ultimo_mensaje: IMensajeResponse | null;
   is_group: boolean;
@@ -14,6 +13,7 @@ export interface IChatResponse {
 
 export interface IChatPrivadoResponse extends IChatResponse {
   usuarioB: IUsuarioResponse;
+  historial_mensajes: IMensajePrivadoResponse[];
   is_temp?: boolean;
 }
 
@@ -29,6 +29,7 @@ export interface IChatGrupalResponse extends IChatResponse {
   link_foto: string | null;
   nombre: string;
   descripcion: string | null;
+  historial_mensajes: IMensajeResponse[];
   integrantes: IIntegranteGrupalResponse[];
   cantidad_integrantes: number;
 }
