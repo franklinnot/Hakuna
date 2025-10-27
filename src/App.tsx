@@ -1,31 +1,27 @@
-import { useTabControl } from './shared/presentation/hooks/useTabControl';
-import { useAuthStore } from './application/auth/hooks/useAuthStore/useAuthStore';
-import { InactiveTab } from './shared/presentation/pages/inactive-tab.page';
-import { PublicPage } from './presentation/public/public.page';
-import { ChatsPage } from './presentation/chats/chats.page';
-import { Paginas } from './shared/domain/enums';
+import { useTabControl } from './useTabControl';
+import { AppStore } from './application/store/app.store';
+import { InactiveTab } from './presentation/pages/inactive/inactive-tab.page';
+import { PublicPage } from './presentation/pages/public/public.page';
+import { ChatsPage } from './presentation/pages/chats/chats.page';
+import { Paginas } from './domain/enums';
 
 function App() {
   const { isTabActive, claimSession } = useTabControl();
-  const view = useAuthStore((state) => state.view);
+  const view = AppStore((state) => state.view);
 
   const renderContent = () => {
-    if (view == Paginas.PUBLIC) {
-      return <PublicPage />;
-    }
+    if (!isTabActive) {
+      return <InactiveTab claimSession={claimSession} />;
+    } else {
+      if (view == Paginas.PUBLIC) {
+        return <PublicPage />;
+      }
 
-    return <ChatsPage />;
+      return <ChatsPage />;
+    }
   };
 
-  return (
-    <div className="h-full w-full">
-      {!isTabActive ? (
-        <InactiveTab claimSession={claimSession} />
-      ) : (
-        renderContent()
-      )}
-    </div>
-  );
+  return <div className="h-full w-full">{renderContent()}</div>;
 }
 
 export default App;
