@@ -1,133 +1,31 @@
-import { useState, useEffect } from 'react';
-import { Button } from '../../../../../../../components/button';
-import { Input } from '../../../../../../../components/input';
-import { FotoPerfil } from '../../../../../../../components/foto-perfil';
+import { Input } from '../../../../../../../shared/presentation/components/ui/input';
+import { Button } from '../../../../../../../shared/presentation/components/ui/button';
+import { FotoPerfil } from '../../../../../../../shared/presentation/components/ui/foto-perfil';
 import { 
   MagnifyingGlassIcon, 
   XMarkIcon
 } from '@heroicons/react/24/outline';
-import { UsuariosService } from '../../../../../../../../infraestructure/rest/usuarios/usuarios.service';
-import { ChatsService } from '../../../../../../../../infraestructure/rest/chats/chats.service';
-import { IUsuarioResponse } from '../../../../../../../../domain/responses/usuarios.responses';
-import { IChatPrivadoResponse } from '../../../../../../../../domain/responses/chats.responses';
-import { UsuarioSeleccionado } from '../types';
+import { useBusquedaUsuarios } from '../../../../../../../application/usuarios/hooks/useBusquedaUsuarios';
+import { useContactosFrecuentes } from '../../../../../../../application/usuarios/hooks/useContactosFrecuentes';
+import { useSeleccionUsuarios } from '../../../../../../../application/usuarios/hooks/useSeleccionUsuarios';
+import type { IUsuarioResponse } from '../../../../../../../application/usuarios/usuarios.responses';
 
 interface SeleccionarUsuariosProps {
-  onSiguiente: (usuarios: UsuarioSeleccionado[]) => void;
-  usuariosSeleccionados: UsuarioSeleccionado[];
-  setUsuariosSeleccionados: (usuarios: UsuarioSeleccionado[]) => void;
+  onSiguiente: (usuarios: IUsuarioResponse[]) => void;
+  usuariosSeleccionados: IUsuarioResponse[];
+  setUsuariosSeleccionados: (usuarios: IUsuarioResponse[]) => void;
   miembrosExistentes?: string[]; // IDs de usuarios que ya están en el grupo
 }
 
 export const SeleccionarUsuarios = ({ onSiguiente, usuariosSeleccionados, setUsuariosSeleccionados, miembrosExistentes = [] }: SeleccionarUsuariosProps) => {
-  const [busqueda, setBusqueda] = useState('');
-  const [usuariosBusqueda, setUsuariosBusqueda] = useState<IUsuarioResponse[]>([]);
-  const [todosLosUsuarios, setTodosLosUsuarios] = useState<IUsuarioResponse[]>([]);
-  const [chatsRecientes, setChatsRecientes] = useState<IChatPrivadoResponse[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [loadingChats, setLoadingChats] = useState(true);
-  const [loadingUsuarios, setLoadingUsuarios] = useState(true);
-  const [debounceTimer, setDebounceTimer] = useState<number | null>(null);
-
-  // Cargar chats recientes y todos los usuarios al montar el componente
-  useEffect(() => {
-    const fetchChatsRecientes = async () => {
-      try {
-        const response = await ChatsService.getChatsPrivados();
-        if (response.success && response.data) {
-          const chatsOrdenados = response.data.sort((a, b) => {
-            const fechaA = a.ultimo_mensaje?.createdAt || a.createdAt;
-            const fechaB = b.ultimo_mensaje?.createdAt || b.createdAt;
-            return new Date(fechaB).getTime() - new Date(fechaA).getTime();
-          });
-          setChatsRecientes(chatsOrdenados.slice(0, 10));
-        }
-      } catch (error) {
-        console.error('Error cargando chats recientes:', error);
-      } finally {
-        setLoadingChats(false);
-      }
-    };
-
-    const fetchTodosLosUsuarios = async () => {
-      try {
-        // Usar una búsqueda con un término muy común para obtener muchos usuarios
-        const response = await UsuariosService.findAllByNombreOUsername('a');
-        if (response.success && response.data) {
-          setTodosLosUsuarios(response.data);
-        }
-      } catch (error) {
-        console.error('Error cargando todos los usuarios:', error);
-      } finally {
-        setLoadingUsuarios(false);
-      }
-    };
-
-    fetchChatsRecientes();
-    fetchTodosLosUsuarios();
-  }, []);
-
-  // Búsqueda de usuarios con debounce
-  useEffect(() => {
-    if (debounceTimer) {
-      clearTimeout(debounceTimer);
-    }
-
-    const timer = setTimeout(async () => {
-      if (busqueda.trim().length >= 2) {
-        setLoading(true);
-        try {
-          const response = await UsuariosService.findAllByNombreOUsername(busqueda.trim());
-          if (response.success && response.data) {
-            setUsuariosBusqueda(response.data);
-          }
-        } catch (error) {
-          console.error('Error buscando usuarios:', error);
-          setUsuariosBusqueda([]);
-        } finally {
-          setLoading(false);
-        }
-      } else {
-        setUsuariosBusqueda([]);
-      }
-    }, 300);
-
-    setDebounceTimer(timer);
-
-    return () => {
-      if (timer) clearTimeout(timer);
-    };
-  }, [busqueda]);
-
-  const estaEnGrupo = (idUsuario: string) => {
-    return miembrosExistentes.includes(idUsuario);
-  };
-
-  const toggleUsuario = (usuario: IUsuarioResponse) => {
-    // No permitir seleccionar usuarios que ya están en el grupo
-    if (estaEnGrupo(usuario.id_usuario)) {
-      return;
-    }
-
-    const usuarioData: UsuarioSeleccionado = {
-      id_usuario: usuario.id_usuario,
-      nombre: usuario.nombre,
-      username: usuario.username,
-      link_foto: usuario.link_foto,
-    };
-
-    const yaEstaSeleccionado = usuariosSeleccionados.some(u => u.id_usuario === usuario.id_usuario);
-    
-    if (yaEstaSeleccionado) {
-      setUsuariosSeleccionados(usuariosSeleccionados.filter(u => u.id_usuario !== usuario.id_usuario));
-    } else {
-      setUsuariosSeleccionados([...usuariosSeleccionados, usuarioData]);
-    }
-  };
-
-  const estaSeleccionado = (idUsuario: string) => {
-    return usuariosSeleccionados.some(u => u.id_usuario === idUsuario);
-  };
+  // Hooks para manejar la lógica de negocio
+  const { busqueda, setBusqueda, usuariosBusqueda, loading: loadingBusqueda, tieneBusquedaActiva } = useBusquedaUsuarios();
+  const { getUsuariosCombinados, isLoading: loadingContactos } = useContactosFrecuentes();
+  const { estaEnGrupo, estaSeleccionado, toggleUsuario } = useSeleccionUsuarios({ 
+    miembrosExistentes, 
+    usuariosSeleccionados, 
+    setUsuariosSeleccionados 
+  });
 
   const handleSiguiente = () => {
     if (usuariosSeleccionados.length > 0) {
@@ -136,22 +34,7 @@ export const SeleccionarUsuarios = ({ onSiguiente, usuariosSeleccionados, setUsu
   };
 
   // Combinar usuarios de manera inteligente
-  const usuariosParaMostrar = (() => {
-    if (busqueda.trim().length >= 2) {
-      // Si hay búsqueda activa, mostrar solo resultados de búsqueda
-      return usuariosBusqueda;
-    } else {
-      // Si no hay búsqueda, combinar contactos frecuentes y todos los usuarios
-      const contactosFrecuentes = chatsRecientes.map(chat => chat.usuarioB);
-      const idsContactosFrecuentes = new Set(contactosFrecuentes.map(u => u.id_usuario));
-      
-      // Filtrar usuarios que no están en contactos frecuentes
-      const otrosUsuarios = todosLosUsuarios.filter(u => !idsContactosFrecuentes.has(u.id_usuario));
-      
-      // Combinar: primero contactos frecuentes, luego otros usuarios
-      return [...contactosFrecuentes, ...otrosUsuarios];
-    }
-  })();
+  const usuariosParaMostrar = tieneBusquedaActiva ? usuariosBusqueda : getUsuariosCombinados();
 
   return (
     <div className="w-full h-full flex flex-col">
@@ -203,12 +86,12 @@ export const SeleccionarUsuarios = ({ onSiguiente, usuariosSeleccionados, setUsu
         {/* Título de sección */}
         <div className="px-4 py-2 bg-gray-50">
           <p className="text-sm font-medium text-gray-600">
-            {busqueda.trim().length >= 2 ? 'Resultados de búsqueda' : 'Contactos'}
+            {tieneBusquedaActiva ? 'Resultados de búsqueda' : 'Contactos'}
           </p>
         </div>
 
         {/* Loading state */}
-        {(loading || loadingChats || loadingUsuarios) && (
+        {(loadingBusqueda || loadingContactos) && (
           <div className="space-y-1">
             {Array.from({ length: 5 }).map((_, i) => (
               <div key={i} className="flex items-center gap-3 p-4 animate-pulse">
@@ -223,12 +106,12 @@ export const SeleccionarUsuarios = ({ onSiguiente, usuariosSeleccionados, setUsu
         )}
 
         {/* Lista de usuarios */}
-        {!loading && !loadingChats && !loadingUsuarios && (
+        {!loadingBusqueda && !loadingContactos && (
           <div>
             {usuariosParaMostrar.length === 0 ? (
               <div className="text-center py-8 text-gray-500">
                 <p className="text-sm">
-                  {busqueda.trim().length >= 2 
+                  {tieneBusquedaActiva 
                     ? 'No se encontraron usuarios' 
                     : 'No hay usuarios disponibles'
                   }

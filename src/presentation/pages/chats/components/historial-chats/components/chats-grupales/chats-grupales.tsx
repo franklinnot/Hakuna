@@ -1,17 +1,18 @@
 import { useState } from 'react';
 import { PlusIcon } from '@heroicons/react/24/outline';
-import { AppStore } from '../../../../../../../application/store/app.store';
+import { useAuthStore } from '../../../../../../application/auth/hooks/useAuthStore';
+import { useChatsGrupalesFlow } from '../../../../../../application/chats/hooks/useChatsGrupalesFlow';
+import { useCrearGrupo } from '../../../../../../application/chats/hooks/useCrearGrupo';
 import { ChatGrupalCard } from './components/chat-grupal-card';
 import { Modal } from '../../../../../../components/modal/modal';
 import { Button } from '../../../../../../components/button';
 import { CrearGrupoModal } from './components/crear-grupo-modal';
-import { ChatsService } from '../../../../../../../infraestructure/rest/chats/chats.service';
-import { IChatGrupalResponse } from '../../../../../../../domain/responses/chats.responses';
+import type { IChatGrupalResponse } from '../../../../../../application/chats/chats.responses';
 
 export const ChatsGrupales = () => {
-  const chatsGrupales = AppStore((state) => state.chatsGrupales);
-  const addChatGrupal = AppStore((state) => state.addChatGrupal);
-  const setIdChatActivo = AppStore((state) => state.setIdChatActivo);
+  const sortedChatsGrupales = useChatsGrupalesFlow();
+  const setChatGrupalActivo = useAuthStore((state) => state.setChatGrupalActivo);
+  const { crearGrupo } = useCrearGrupo();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleOpenModal = () => setIsModalOpen(true);
@@ -27,31 +28,9 @@ export const ChatsGrupales = () => {
     foto?: string;
     integrantes: string[];
   }) => {
-    try {
-      // Transformar los integrantes al formato que espera el backend
-      const integrantesFormateados = datosGrupo.integrantes.map(id => ({ id_usuario: id }));
-      
-      const datosParaAPI = {
-        nombre: datosGrupo.nombre,
-        descripcion: datosGrupo.descripcion,
-        foto: datosGrupo.foto,
-        integrantes: integrantesFormateados
-      };
-
-      console.log('Creando grupo con datos:', datosParaAPI);
-      
-      const respuesta = await ChatsService.createChatGrupal(datosParaAPI);
-      
-      if (respuesta.success && respuesta.data) {
-        console.log('Grupo creado exitosamente:', respuesta.data);
-        // Agregar el nuevo grupo a la lista
-        addChatGrupal(respuesta.data);
-        setIsModalOpen(false);
-      } else {
-        console.error('Error al crear el grupo:', respuesta.error);
-      }
-    } catch (error) {
-      console.error('Error al crear el grupo:', error);
+    const resultado = await crearGrupo(datosGrupo);
+    if (resultado.success) {
+      setIsModalOpen(false);
     }
   };
 
@@ -72,8 +51,8 @@ export const ChatsGrupales = () => {
 
       {/* Lista de chats grupales */}
       <div className="flex-1 overflow-y-auto space-y-2">
-        {chatsGrupales && chatsGrupales.length > 0 ? (
-          chatsGrupales.map((chat) => (
+        {sortedChatsGrupales.length > 0 ? (
+          sortedChatsGrupales.map((chat) => (
             <ChatGrupalCard
               key={chat.id_chat}
               chat={chat}
