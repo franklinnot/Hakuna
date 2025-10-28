@@ -8,13 +8,14 @@ export function getSocketClient(): Socket {
     socketClient = io(API_URL, {
       autoConnect: false,
       withCredentials: true,
-      transports: ['websocket'], // más estable, evita polling
+      // transports: ['websocket'], // más estable, evita polling
     });
   }
   return socketClient;
 }
 
-export function connectSocket(token: string) {
+export async function connectSocket(token: string) {
+  if (token.trim() === '') return;
   const socket = getSocketClient();
   if (socket.connected) return;
 

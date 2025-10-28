@@ -17,6 +17,18 @@ export const useGetMensajes = () => {
       ? mensajes.reduce((a, b) => (b.createdAt > a.createdAt ? b : a))
       : null;
 
+  const mergeMensajes = (
+    actuales: IMensajeResponse[] = [],
+    nuevos: IMensajeResponse[] = [],
+  ): IMensajeResponse[] => {
+    const mapa = new Map<string, IMensajeResponse>();
+    [...actuales, ...nuevos].forEach((m) => mapa.set(m.id_mensaje, m));
+    return Array.from(mapa.values()).sort(
+      (a, b) =>
+        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+    );
+  };
+
   const getMensajes = async (
     setError: (e: ErrorResponse) => void,
     chatsPrivados: IChatPrivadoResponse[],
@@ -30,31 +42,51 @@ export const useGetMensajes = () => {
         return;
       }
 
+      // --- PRIVADOS ---
       const nuevosPrivados = await Promise.all(
         chatsPrivados.map(async (chat) => {
-          if (chat.historial_mensajes?.length) return chat;
           const resp = await MensajesService.getMensajesPrivados(chat.id_chat);
-          if (resp.success && resp.data)
+          if (resp.success && resp.data) {
+            const chatActual = AppStore.getState().chatsPrivados.find(
+              (c) => c.id_chat === chat.id_chat,
+            );
+            const historialExistente = chatActual?.historial_mensajes ?? [];
+            const historialFusionado = mergeMensajes(
+              historialExistente,
+              resp.data,
+            );
+
             return {
               ...chat,
-              historial_mensajes: resp.data,
-              ultimo_mensaje: getUltimoMensaje(resp.data),
+              historial_mensajes: historialFusionado,
+              ultimo_mensaje: getUltimoMensaje(historialFusionado),
             };
+          }
           return chat;
         }),
       );
-      setChatsPrivados(nuevosPrivados);
+      setChatsPrivados(nuevosPrivados as IChatPrivadoResponse[]);
 
+      // --- GRUPALES ---
       const nuevosGrupales = await Promise.all(
         chatsGrupales.map(async (chat) => {
-          if (chat.historial_mensajes?.length) return chat;
           const resp = await MensajesService.getMensajesGrupales(chat.id_chat);
-          if (resp.success && resp.data)
+          if (resp.success && resp.data) {
+            const chatActual = AppStore.getState().chatsGrupales.find(
+              (c) => c.id_chat === chat.id_chat,
+            );
+            const historialExistente = chatActual?.historial_mensajes ?? [];
+            const historialFusionado = mergeMensajes(
+              historialExistente,
+              resp.data,
+            );
+
             return {
               ...chat,
-              historial_mensajes: resp.data,
-              ultimo_mensaje: getUltimoMensaje(resp.data),
+              historial_mensajes: historialFusionado,
+              ultimo_mensaje: getUltimoMensaje(historialFusionado),
             };
+          }
           return chat;
         }),
       );

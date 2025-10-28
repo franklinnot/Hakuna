@@ -5,7 +5,6 @@ import { useGetMensajes } from '../mensajes/useGetMensajes';
 import { LoginSchema } from '../../../infraestructure/rest/auth/auth.dtos';
 import type { ErrorResponse } from '../../response';
 import { Paginas } from '../../../domain/enums';
-import { connectSocket } from '../../../infraestructure/socket/socket.client';
 import {
   IChatGrupalResponse,
   IChatPrivadoResponse,
@@ -45,21 +44,20 @@ export const useIniciarSesion = () => {
 
       const [chatsPrivados, chatsGrupales] = await getChats(setError);
 
-      // conectarse al socket
-      connectSocket(response.data.token);
+      setTimeout(async () => {
+        await getMensajes(
+          setError,
+          chatsPrivados as IChatPrivadoResponse[],
+          chatsGrupales as IChatGrupalResponse[],
+        );
 
-      await getMensajes(
-        setError,
-        chatsPrivados as IChatPrivadoResponse[],
-        chatsGrupales as IChatGrupalResponse[],
-      );
-
-      // ir a la vista principal
-      setView(Paginas.CHATS);
+        // ir a la vista principal
+        setView(Paginas.CHATS);
+        setIsLoading(false);
+      }, 300);
     } catch (err) {
       console.error('Error en login:', err);
       setError('Error al iniciar sesión.');
-    } finally {
       setIsLoading(false);
     }
   };
