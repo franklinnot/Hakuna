@@ -3,12 +3,12 @@ import { Input } from '../../../../../../../components/input';
 import { FotoPerfil } from '../../../../../../../components/foto-perfil';
 import { UploadFotoPerfil } from '../../../../../../../components/upload-foto-perfil/upload-foto-perfi';
 import { ArrowLeftIcon, UserGroupIcon } from '@heroicons/react/24/outline';
-import { UsuarioSeleccionado } from '../types';
 import { AppStore } from '../../../../../../../../application/store/app.store';
+import { IUsuarioResponse } from '../../../../../../../../domain/responses/usuarios.responses';
 
 interface ConfigurarGrupoModalProps {
   isOpen: boolean;
-  usuarios: UsuarioSeleccionado[];
+  usuarios: IUsuarioResponse[];
   onClose: () => void;
   onVolver: () => void;
   onCrearGrupo: (datosGrupo: {

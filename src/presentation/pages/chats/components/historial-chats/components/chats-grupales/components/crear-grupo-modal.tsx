@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { SeleccionarUsuarios } from './seleccionar-usuarios';
+import { SeleccionarUsuarios } from './seleccionar-usuarios/seleccionar-usuarios';
 import { ConfigurarGrupoModal } from './configurar-grupo-modal';
-import type { IUsuarioResponse } from '../../../../../../../application/usuarios/usuarios.responses';
+import type { IUsuarioResponse } from '../../../../../../../../domain/responses/usuarios.responses';
 
 interface CrearGrupoModalProps {
   isOpen: boolean;

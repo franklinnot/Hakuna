@@ -1,17 +1,17 @@
 import { useState } from 'react';
-import { Button } from '../../../components/button';
-import { Input } from '../../../components/input';
-import { ErrorDisplay } from '../../../components/errors/error-display';
-import { InputChange } from '../../../html.types';
-import { ErrorResponse } from '../../../../application/response';
-import { UploadFotoPerfil } from '../../../components/upload-foto-perfil/upload-foto-perfi';
+import { Button } from '../../../../components/button';
+import { Input } from '../../../../components/input';
+import { ErrorDisplay } from '../../../../components/errors/error-display';
+import { InputChange } from '../../../../html.types';
+import { LoadingScreen } from '../../../../components/loading-screen';
+import { ErrorResponse } from '../../../../../application/response';
+import { UploadFotoPerfil } from '../../../../components/upload-foto-perfil/upload-foto-perfi';
 import {
   IdentificationIcon,
   UserIcon,
   LockClosedIcon,
 } from '@heroicons/react/16/solid';
-import { useCrearUsuario } from '../../../../application/use-cases/auth/useCrearUsuario';
-import { LoadingScreen } from '../../../components/loading-screen';
+import { useCrearUsuario } from '../../../../../application/use-cases/auth/useCrearUsuario';
 
 export const RegisterForm = ({
   switchTo,

@@ -1,17 +1,17 @@
 import { useState } from 'react';
 import { PlusIcon } from '@heroicons/react/24/outline';
-import { useAuthStore } from '../../../../../../application/auth/hooks/useAuthStore';
-import { useChatsGrupalesFlow } from '../../../../../../application/chats/hooks/useChatsGrupalesFlow';
-import { useCrearGrupo } from '../../../../../../application/chats/hooks/useCrearGrupo';
+import { AppStore } from '../../../../../../../application/store/app.store';
+import { useChatsGrupalesFlow } from './hooks/useChatsGrupalesFlow';
+import { useCrearGrupo } from '../../../../../../../application/use-cases/chats/useCrearGrupo';
 import { ChatGrupalCard } from './components/chat-grupal-card';
 import { Modal } from '../../../../../../components/modal/modal';
 import { Button } from '../../../../../../components/button';
 import { CrearGrupoModal } from './components/crear-grupo-modal';
-import type { IChatGrupalResponse } from '../../../../../../application/chats/chats.responses';
+import type { IChatGrupalResponse } from '../../../../../../../domain/responses/chats.responses';
 
 export const ChatsGrupales = () => {
   const sortedChatsGrupales = useChatsGrupalesFlow();
-  const setChatGrupalActivo = useAuthStore((state) => state.setChatGrupalActivo);
+  const { setIdChatActivo } = AppStore();
   const { crearGrupo } = useCrearGrupo();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -62,13 +62,19 @@ export const ChatsGrupales = () => {
         ) : (
           <div className="text-center text-gray-400 py-8">
             <p className="text-sm">No tienes grupos aún</p>
-            <p className="text-xs mt-1">Crea tu primer grupo haciendo clic en +</p>
+            <p className="text-xs mt-1">
+              Crea tu primer grupo haciendo clic en +
+            </p>
           </div>
         )}
       </div>
 
       {/* Modal para crear nuevo grupo */}
-      <Modal isOpen={isModalOpen} onClose={handleCloseModal} title="Nuevo grupo">
+      <Modal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        title="Nuevo grupo"
+      >
         <CrearGrupoModal
           isOpen={isModalOpen}
           onClose={handleCloseModal}

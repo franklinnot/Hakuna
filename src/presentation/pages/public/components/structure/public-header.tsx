@@ -1,5 +1,5 @@
-import { Image } from "../../../components/img";
-import { Button } from "../../../components/button";
+import { Image } from '../../../../components/img';
+import { Button } from '../../../../components/button';
 
 export const PublicHeader = ({
   onLoginClick,
@@ -11,8 +11,8 @@ export const PublicHeader = ({
   return (
     <header className="w-full p-4 md:p-6 lg:p-8">
       <div
-        className="mx-auto flex w-full max-w-screen-xl items-center justify-between 
-        rounded-xl bg-black/40 p-4 px-6 backdrop-blur-sm"
+        className="mx-auto flex w-full max-w-screen-xl items-center 
+        justify-between rounded-xl bg-black/40 p-4 px-6 backdrop-blur-sm"
       >
         <Image src="logo-name.svg" className="h-8 w-auto" />
         <div className="flex items-center gap-6 md:gap-10">
@@ -22,8 +22,8 @@ export const PublicHeader = ({
             <Button onClick={onLoginClick}>Iniciar sesión</Button>
             <Button
               onClick={onRegisterClick}
-              className="bg-white text-[var(--black-secondary)] hover:bg-[var(--gray-primary)] 
-                          focus:outline-white"
+              className="bg-white text-[var(--black-secondary)] 
+              hover:bg-[var(--gray-primary)] focus:outline-white"
             >
               Registrarme
             </Button>

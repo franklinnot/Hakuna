@@ -8,7 +8,7 @@ export const ChatsPage = () => {
     <AuthLayout>
       <div
         className="w-full h-full grid grid-rows-1 grid-cols-[auto_auto_1fr] gap-4 
-      p-4 bg-[var(--black-primary)]"
+        p-4 bg-[var(--black-primary)]"
       >
         {/* Sidebar */}
         <Sidebar />

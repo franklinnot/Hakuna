@@ -5,7 +5,7 @@ import {
   IChatGrupalResponse,
   IChatPrivadoResponse,
 } from '../../domain/responses/chats.responses';
-import { IMensajeResponse } from '../../domain/responses/mensajes.responses';
+import { IMensajePrivadoResponse, IMensajeResponse } from '../../domain/responses/mensajes.responses';
 
 export interface IAppStore {
   // Propiedades
@@ -44,14 +44,17 @@ export interface IAppStore {
   // Mensajes privados
   addMensajeToChatPrivado: (
     id_chat: string,
-    nuevoMensaje: IMensajeResponse,
+    nuevoMensaje: IMensajePrivadoResponse,
   ) => void;
-  updateMensajePrivado: (id_mensaje: string, data: IMensajeResponse) => void;
-  // replaceMensajePrivadoTemporal
+  updateMensajePrivado: (
+    id_mensaje: string,
+    data: IMensajePrivadoResponse,
+  ) => void;
+  // reemplazar datos de un mensaje temporal de un chat privado
   replaceMensajePrivadoTemporal: (
     oldChatId: string,
     tempMensajeId: string,
-    serverMsg: IMensajeResponse,
+    serverMsg: IMensajePrivadoResponse,
   ) => void;
 
   // Mensajes grupales
