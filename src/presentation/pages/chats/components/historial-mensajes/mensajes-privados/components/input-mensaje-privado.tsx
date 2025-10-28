@@ -50,7 +50,7 @@ export const InputMensajePrivado = ({
           rows={1}
           className="w-full bg-gray-100 rounded-2xl px-4 py-2.5 resize-none 
             text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-400 
-            max-h-40 leading-relaxed placeholder-gray-400 scrollbar-custom"
+            max-h-40 leading-relaxed placeholder-gray-400 scrollbar-custom-auto"
         />
       </div>
 
