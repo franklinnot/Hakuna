@@ -62,4 +62,10 @@ export interface IAppStore {
     id_chat: string,
     nuevoMensaje: IMensajeResponse,
   ) => void;
+  updateMensajeGrupal: (id_mensaje: string, data: Partial<IMensajeResponse>) => void;
+  replaceMensajeGrupalTemporal: (
+    id_chat: string,
+    tempMensajeId: string,
+    serverMsg: IMensajeResponse,
+  ) => void;
 }

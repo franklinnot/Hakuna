@@ -4,7 +4,7 @@ import { ICrearArchivo } from '../../../../../../infraestructure/rest/mensajes/m
 import { IMensajeResponse } from '../../../../../../domain/responses/mensajes.responses';
 import { FotoPerfil } from '../../../../../components/foto-perfil';
 import { IUsuarioResponse } from '../../../../../../domain/responses/usuarios.responses';
-import { Estado, EstadoEnvioMensaje } from '../../../../../../domain/enums';
+import { EstadoEnvioMensaje, TipoArchivo } from '../../../../../../domain/enums';
 import {
   EllipsisVerticalIcon,
   InformationCircleIcon,
@@ -14,43 +14,53 @@ import { ModalRelativo } from '../../../../../components/modal/modal-relativo';
 import { InformacionGrupoModal } from './informacion-grupo-modal';
 import { ChatsService } from '../../../../../../infraestructure/rest/chats/chats.service';
 import { AppStore } from '../../../../../../application/store/app.store';
+import { useSendMensajeGrupal } from '../../../../../../application/use-cases/mensajes/useSendMensajeGrupal';
+
+interface GroupMember {
+  id: string;
+  name: string;
+  avatar: string | null;
+  isAdmin: boolean;
+}
 
 interface MensajesGrupalesProps {
   chat: IChatGrupalResponse;
   usuario: IUsuarioResponse;
-  mensajesIniciales: IMensajeResponse[];
 }
 
 export const MensajesGrupales = ({
   chat,
   usuario,
-  mensajesIniciales,
 }: MensajesGrupalesProps) => {
-  const [mensajes, setMensajes] = useState<IMensajeResponse[]>(
-    (mensajesIniciales || []).map((m) => ({ ...m })),
-  );
+  // Usar el hook para enviar mensajes
+  const { sendMensajeGrupal, isLoading } = useSendMensajeGrupal();
+  
+  // Obtener función para actualizar chat del store
+  const updateChatGrupal = AppStore((s) => s.updateChatGrupal);
+  
+  // Obtener mensajes del store global
+  const mensajesDelStore = AppStore((s) => {
+    const chatActual = s.chatsGrupales.find(c => c.id_chat === chat.id_chat);
+    return chatActual?.historial_mensajes || [];
+  });
+
   const [descripcion, setDescripcion] = useState('');
   const [archivos, setArchivos] = useState<ICrearArchivo[] | undefined>();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isConfigModalOpen, setIsConfigModalOpen] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // accion del store para actualizar historial global
-  // const updateChatInStore = useAuthStore((s) => s.updateMensajesChatGrupal);
-  const updateChatGrupal = AppStore((s) => s.updateChatGrupal);
-
-  // cuando cambie el chat o los mensajesIniciales, reemplace el estado local
+  // cuando cambie el chat, scroll al fondo
   useEffect(() => {
-    setMensajes((mensajesIniciales || []).map((m) => ({ ...m })));
-    // scroll al fondo tras re-render
     setTimeout(() => {
       scrollRef.current?.scrollTo({
         top: scrollRef.current?.scrollHeight ?? 0,
         behavior: 'smooth',
       });
     }, 50);
-  }, [chat.id_chat, mensajesIniciales]);
+  }, [chat.id_chat]);
 
   // cuando mensajes cambian, scroll al final (solo si hay mensajes)
   useEffect(() => {
@@ -60,7 +70,7 @@ export const MensajesGrupales = ({
         behavior: 'smooth',
       });
     }, 80);
-  }, [mensajes]);
+  }, [mensajesDelStore]);
 
   // helper: ordenar por createdAt ascendente (oldest first)
   const ordenar = (arr: IMensajeResponse[]) =>
@@ -71,75 +81,63 @@ export const MensajesGrupales = ({
           new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
       );
 
-  // Envío optimista con estado de envío
   const handleSend = async () => {
     if (!descripcion.trim() && !archivos?.length) return;
 
-    const tempId = `temp-msg-${Date.now()}`;
-    const tempMensaje: IMensajeResponse = {
-      id_mensaje: tempId,
-      id_usuario: usuario.id_usuario,
+    await sendMensajeGrupal({
       id_chat: chat.id_chat,
-      is_group: true,
       descripcion: descripcion,
-      has_files: !!archivos?.length,
-      createdAt: new Date(),
-      archivos: [],
-      estado: Estado.HABILITADO,
-      estado_envio: EstadoEnvioMensaje.SENDING,
-    };
+      archivos: archivos,
+    });
 
-    setMensajes((prev) => ordenar([...prev, tempMensaje]));
+    // Limpiar campos
     setDescripcion('');
     setArchivos(undefined);
+  };
+
+  const fileToBase64 = (file: File): Promise<string> =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const result = reader.result as string;
+        // remover el encabezado data:*;base64,
+        const commaIndex = result.indexOf(',');
+        resolve(commaIndex >= 0 ? result.slice(commaIndex + 1) : result);
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+
+  const handleAttachClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFilesSelected = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+
+    const mapTipo = (f: File): TipoArchivo => {
+      if (f.type.startsWith('image/')) return TipoArchivo.IMAGEN;
+      if (f.type.startsWith('audio/')) return TipoArchivo.AUDIO;
+      if (f.type.startsWith('video/')) return TipoArchivo.VIDEO;
+      return TipoArchivo.DOCUMENTO;
+    };
 
     try {
-      // Por ahora, simular el envío exitoso hasta que se implemente el endpoint
-      setTimeout(() => {
-        setMensajes((prev) =>
-          ordenar(
-            prev.map((m) =>
-              m.id_mensaje === tempId
-                ? ({ ...m, estado_envio: 'sent' } as IMensajeResponse)
-                : m,
-            ),
-          ),
-        );
-      }, 1000);
-
-      // TODO: Implementar envío real cuando esté disponible el endpoint
-      // const resp = await MensajesService.enviarMensajeGrupal({
-      //   id_chat: chat.id_chat,
-      //   descripcion: tempMensaje.descripcion || undefined,
-      //   archivos,
-      // });
-
-      // if (resp.success && resp.data) {
-      //   const serverMsg = resp.data as IMensajeResponse;
-      //   setMensajes((prev) =>
-      //     ordenar(
-      //       prev.map((m) =>
-      //         m.id_mensaje === tempId
-      //           ? ({ ...serverMsg, estado_envio: 'sent' } as UIMessage)
-      //           : m,
-      //       ),
-      //     ),
-      //   );
-      //   updateChatInStore(serverMsg.id_chat, serverMsg);
-      // } else {
-      //   setMensajes((prev) =>
-      //     prev.map((m) =>
-      //       m.id_mensaje === tempId ? { ...m, estado_envio: 'error' } : m,
-      //     ),
-      //   );
-      // }
-    } catch (err) {
-      console.error('Error al enviar mensaje grupal:', err);
-      setMensajes((prev) =>
-        prev.map((m) =>
-          m.id_mensaje === tempId ? { ...m, estado_envio: EstadoEnvioMensaje.ERROR } : m,
-        ),
+      const list: ICrearArchivo[] = await Promise.all(
+        files.map(async (f) => ({
+          nombre: f.name,
+          tipoArchivo: mapTipo(f),
+          b64: await fileToBase64(f),
+        })),
       );
+
+      setArchivos(list);
+    } catch (err) {
+      console.error('Error leyendo archivos:', err);
+    } finally {
+      // limpiar el input para poder volver a seleccionar el mismo archivo si se desea
+      if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };
 
@@ -171,13 +169,11 @@ export const MensajesGrupales = ({
   };
 
   const handleInfoGrupo = () => {
-    console.log('Mostrar información del grupo:', chat.nombre);
     handleCloseMenu();
     setIsConfigModalOpen(true);
   };
 
   const handleSalirGrupo = () => {
-    console.log('Salir del grupo:', chat.nombre);
     handleCloseMenu();
     // TODO: Implementar confirmación y lógica para salir del grupo
   };
@@ -222,7 +218,6 @@ export const MensajesGrupales = ({
       if (response.success && response.data) {
         // Actualizar el store con los nuevos datos
         updateChatGrupal(response.data);
-        console.log('Grupo actualizado exitosamente');
       } else {
         console.error('Error al actualizar el grupo:', response.error);
       }
@@ -232,12 +227,10 @@ export const MensajesGrupales = ({
   };
 
   const handleRemoveMember = (memberId: string) => {
-    console.log('Quitar miembro:', memberId);
     // TODO: Implementar lógica para quitar miembro del grupo
   };
 
-  const handleAddMember = (member: any) => {
-    console.log('Añadir miembro:', member);
+  const handleAddMember = (member: GroupMember) => {
     // TODO: Implementar lógica para añadir miembro al grupo
   };
 
@@ -276,15 +269,15 @@ export const MensajesGrupales = ({
         ref={scrollRef}
         className="flex-1 flex flex-col p-4 overflow-y-auto bg-gray-50"
       >
-        {mensajes.length === 0 ? (
+        {mensajesDelStore.length === 0 ? (
           <p className="text-center text-gray-400 italic mt-10">
             No hay mensajes aún.
           </p>
         ) : (
           // renderizamos mensajes ya ordenados (más antiguos arriba)
-          ordenar(mensajes).map((m) => {
+          ordenar(mensajesDelStore).map((m) => {
             const esMio = m.id_usuario === usuario.id_usuario;
-            const estadoEnvio = (m as IMensajeResponse).estado_envio;
+            const estadoEnvio = m.estado_envio;
             const nombreUsuario = getNombreUsuario(m.id_usuario);
             const fotoUsuario = getFotoUsuario(m.id_usuario);
 
@@ -327,18 +320,57 @@ export const MensajesGrupales = ({
                     </p>
                   )}
 
-                  {m.has_files && (
-                    <div
-                      className={`mt-1 pt-1 text-xs flex items-center gap-1 ${
-                        esMio
-                          ? 'border-t border-indigo-400 text-indigo-100'
-                          : 'border-t border-gray-300 text-gray-600'
-                      }`}
-                    >
-                      <span>📎</span>
-                      <span>Archivo adjunto</span>
+                  {m.archivos?.length ? (
+                    <div className="mt-2 flex flex-col gap-2">
+                      {m.archivos.map((a) => {
+                        const isImage = a.tipo_archivo === TipoArchivo.IMAGEN;
+                        const canOpen = !!a.link;
+                        const nombre = a.nombre || `${a.tipo_archivo}.${a.extension}`;
+
+                        if (isImage && canOpen) {
+                          return (
+                            <a
+                              key={a.id_archivo}
+                              href={a.link!}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="block overflow-hidden rounded-md border border-gray-300 bg-white"
+                            >
+                              <img
+                                src={a.link!}
+                                alt={nombre}
+                                className="max-h-40 w-auto object-cover"
+                              />
+                            </a>
+                          );
+                        }
+
+                        return (
+                          <a
+                            key={a.id_archivo}
+                            href={canOpen ? a.link! : '#'}
+                            target={canOpen ? '_blank' : undefined}
+                            rel={canOpen ? 'noopener noreferrer' : undefined}
+                            download
+                            onClick={(e) => {
+                              if (!canOpen) e.preventDefault();
+                            }}
+                            className={`text-xs flex items-center gap-2 px-3 py-2 rounded-md border ${
+                              esMio
+                                ? 'border-indigo-400 bg-indigo-600/10 text-indigo-100'
+                                : 'border-gray-300 bg-gray-100 text-gray-700'
+                            }`}
+                          >
+                            <span>📎</span>
+                            <span className="truncate max-w-[200px]">{nombre}</span>
+                            {!canOpen && (
+                              <span className="opacity-70">(no disponible)</span>
+                            )}
+                          </a>
+                        );
+                      })}
                     </div>
-                  )}
+                  ) : null}
 
                   <div className="flex items-center justify-end gap-2 mt-1 text-[10px]">
                     <span
@@ -354,22 +386,15 @@ export const MensajesGrupales = ({
 
                     {esMio && (
                       <span aria-hidden>
-                        {estadoEnvio === 'sending' && '⏳'}
-                        {estadoEnvio === 'sent' && '✅'}
-                        {estadoEnvio === 'error' && '⚠️'}
+                        {estadoEnvio === EstadoEnvioMensaje.SENDING && '⏳'}
+                        {estadoEnvio === EstadoEnvioMensaje.SENT && '✅'}
+                        {estadoEnvio === EstadoEnvioMensaje.ERROR && '⚠️'}
                       </span>
                     )}
                   </div>
                 </div>
 
-                {esMio && (
-                  <FotoPerfil
-                    link_foto={usuario.link_foto}
-                    nombre={usuario.nombre}
-                    verPerfil={false}
-                    className="size-8 flex-shrink-0 ml-2 mt-1"
-                  />
-                )}
+                {/* No mostrar avatar propio en chats grupales */}
               </div>
             );
           })
@@ -382,10 +407,33 @@ export const MensajesGrupales = ({
           <button
             className="text-xl text-gray-500 mr-2"
             title="Adjuntar archivo"
-            onClick={() => console.log('Adjuntar archivo')}
+            onClick={handleAttachClick}
           >
             📎
           </button>
+
+          {/* input oculto para selección de archivos */}
+          <input
+            ref={fileInputRef}
+            type="file"
+            multiple
+            accept="image/*,audio/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip,.rar"
+            onChange={handleFilesSelected}
+            className="hidden"
+          />
+
+          {archivos?.length ? (
+            <span className="mr-2 text-xs text-gray-600 bg-gray-200 rounded-md px-2 py-1 flex items-center gap-1">
+              {archivos.length} archivo{archivos.length > 1 ? 's' : ''} listo(s)
+              <button
+                className="ml-1 text-gray-500 hover:text-gray-700"
+                title="Quitar adjuntos"
+                onClick={() => setArchivos(undefined)}
+              >
+                ✖
+              </button>
+            </span>
+          ) : null}
 
           <input
             type="text"
@@ -399,7 +447,7 @@ export const MensajesGrupales = ({
           <button
             className="text-xl text-gray-500 ml-2"
             title="Enviar emoji"
-            onClick={() => console.log('Abrir emojis')}
+            onClick={() => {/* TODO: Implementar selector de emojis */}}
           >
             🙂
           </button>
@@ -407,9 +455,16 @@ export const MensajesGrupales = ({
 
         <button
           onClick={handleSend}
-          className="w-11 h-11 rounded-xl flex items-center justify-center shadow-md bg-indigo-500 hover:bg-indigo-600 transition-colors"
+          disabled={isLoading}
+          className={`w-11 h-11 rounded-xl flex items-center justify-center shadow-md transition-colors ${
+            isLoading 
+              ? 'bg-gray-400 cursor-not-allowed' 
+              : 'bg-indigo-500 hover:bg-indigo-600'
+          }`}
         >
-          <span className="text-xl text-white">➡️</span>
+          <span className="text-xl text-white">
+            {isLoading ? '⏳' : '➡️'}
+          </span>
         </button>
       </footer>
 
