@@ -11,3 +11,8 @@ export interface EnviarMensajePrivadoDto {
   descripcion?: string;
   archivos?: ICrearArchivo[];
 }
+
+export interface EnviarMensajeGrupalDto {
+  descripcion?: string;
+  archivos?: ICrearArchivo[];
+}
