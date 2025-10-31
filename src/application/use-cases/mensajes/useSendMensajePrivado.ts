@@ -5,6 +5,7 @@ import { IChatPrivadoResponse } from '../../../domain/responses/chats.responses'
 import { IUsuarioResponse } from '../../../domain/responses/usuarios.responses';
 import { ICrearArchivo } from '../../../infraestructure/rest/mensajes/mensajes.dtos';
 import { Estado, EstadoEnvioMensaje } from '../../../domain/enums';
+import { v4 as uuidv4 } from 'uuid';
 
 export const useSendMensajePrivado = () => {
   const {
@@ -22,7 +23,7 @@ export const useSendMensajePrivado = () => {
     if (!descripcion?.trim() && !archivos?.length) return;
 
     // crear temporal e insertar inmediatamente
-    const tempId = `temp-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    const tempId = `temp-${uuidv4()}`;
     const tempMensaje: IMensajePrivadoResponse = {
       id_mensaje: tempId,
       id_usuario: usuario.id_usuario,

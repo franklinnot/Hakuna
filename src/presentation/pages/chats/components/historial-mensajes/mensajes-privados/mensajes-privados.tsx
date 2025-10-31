@@ -1,6 +1,6 @@
 import { IChatPrivadoResponse } from '../../../../../../domain/responses/chats.responses';
 import { IUsuarioResponse } from '../../../../../../domain/responses/usuarios.responses';
-import { InputMensajePrivado } from './components/input-mensaje-privado';
+import { InputMensajePrivado } from './components/input-mensaje-privado/input-mensaje-privado';
 import { HeaderMensajesPrivados } from './components/header-mensajes-privados';
 import { BodyMensajesPrivados } from './components/body-mensajes-privados';
 
