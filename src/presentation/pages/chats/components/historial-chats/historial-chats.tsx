@@ -13,7 +13,7 @@ export const HistorialChats = () => {
 
   return (
     <div
-      className="size-full bg-gray-800 p-5 rounded-2xl flex flex-col 
+      className="size-full bg-gray-800 p-4 py-5 pb-0 rounded-2xl flex flex-col 
       gap-5 max-sm:max-w-[280px] w-full sm:w-[320px] md:w-[350px] lg:w-[380px]"
     >
       <div className="block w-full relative">

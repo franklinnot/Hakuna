@@ -1,10 +1,10 @@
-import { Button } from "../../../components/button";
+import { Button } from '../../../../components/button';
 import {
   UserGroupIcon,
   LockClosedIcon,
   ChatBubbleBottomCenterIcon,
-} from "@heroicons/react/16/solid";
-import { PublicCard } from "./public-card";
+} from '@heroicons/react/16/solid';
+import { PublicCard } from '../ui/public-card';
 
 export const PublicMain = ({
   onLoginClick,
@@ -15,7 +15,10 @@ export const PublicMain = ({
 }) => {
   return (
     <main className="flex w-full items-center justify-center p-4 md:p-14">
-      <div className="flex w-full max-w-screen-lg flex-col items-center gap-16 md:gap-20">
+      <div
+        className="flex w-full max-w-screen-lg flex-col items-center 
+        gap-16 md:gap-20"
+      >
         {/* saludo */}
         <div className="flex flex-col items-start gap-6 text-left mr-auto">
           <div className="text-white text-shadow-lg">
@@ -42,7 +45,10 @@ export const PublicMain = ({
         </div>
 
         {/* cards */}
-        <div className="grid w-full grid-cols-1 gap-8 text-[var(--black-primary)] md:grid-cols-3">
+        <div
+          className="grid w-full grid-cols-1 gap-8 text-[var(--black-primary)] 
+          md:grid-cols-3"
+        >
           <PublicCard
             icon={ChatBubbleBottomCenterIcon}
             title="Mensajes instantáneos"

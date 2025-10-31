@@ -1,10 +1,11 @@
 import { MensajesService } from '../../../infraestructure/rest/mensajes/mensajes.service';
 import { AppStore } from '../../store/app.store';
-import { IMensajeResponse } from '../../../domain/responses/mensajes.responses';
+import { IMensajePrivadoResponse } from '../../../domain/responses/mensajes.responses';
 import { IChatPrivadoResponse } from '../../../domain/responses/chats.responses';
 import { IUsuarioResponse } from '../../../domain/responses/usuarios.responses';
 import { ICrearArchivo } from '../../../infraestructure/rest/mensajes/mensajes.dtos';
 import { Estado, EstadoEnvioMensaje } from '../../../domain/enums';
+import { v4 as uuidv4 } from 'uuid';
 
 export const useSendMensajePrivado = () => {
   const {
@@ -22,8 +23,8 @@ export const useSendMensajePrivado = () => {
     if (!descripcion?.trim() && !archivos?.length) return;
 
     // crear temporal e insertar inmediatamente
-    const tempId = `temp-${Date.now()}-${Math.random().toString(36).slice(2)}`;
-    const tempMensaje: IMensajeResponse = {
+    const tempId = `temp-${uuidv4()}`;
+    const tempMensaje: IMensajePrivadoResponse = {
       id_mensaje: tempId,
       id_usuario: usuario.id_usuario,
       id_chat: chat.id_chat,
@@ -34,6 +35,7 @@ export const useSendMensajePrivado = () => {
       archivos: [],
       estado: Estado.HABILITADO,
       estado_envio: EstadoEnvioMensaje.SENDING,
+      id_usuarioB: chat.usuarioB.id_usuario,
     };
 
     addMensajeToChatPrivado(chat.id_chat, tempMensaje);
@@ -50,22 +52,22 @@ export const useSendMensajePrivado = () => {
         // marcar temporal como error
         updateMensajePrivado(tempId, {
           estado_envio: EstadoEnvioMensaje.ERROR,
-        } as IMensajeResponse);
+        } as IMensajePrivadoResponse);
         return;
       }
 
-      const serverMsg = resp.data as IMensajeResponse;
+      const serverMsg = resp.data as IMensajePrivadoResponse;
 
       // reemplazar temporal por mensaje real
       replaceMensajePrivadoTemporal(chat.id_chat, tempId, {
         ...serverMsg,
         estado_envio: EstadoEnvioMensaje.SENT,
-      } as IMensajeResponse);
+      } as IMensajePrivadoResponse);
     } catch (err) {
       console.error('Error enviando mensaje:', err);
       updateMensajePrivado(tempId, {
         estado_envio: EstadoEnvioMensaje.ERROR,
-      } as IMensajeResponse);
+      } as IMensajePrivadoResponse);
     }
   };
 

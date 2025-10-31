@@ -14,7 +14,7 @@ export const ChatsPrivados = () => {
   };
 
   return (
-    <div className="overflow-y-auto size-full px-1 py-2">
+    <div className="size-full px-1 py-2 pb-0 scrollbar-custom">
       {merged.length === 0 ? (
         <p className="text-gray-500 text-center mt-4">
           No tienes chats privados aún.

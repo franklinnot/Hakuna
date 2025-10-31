@@ -1,9 +1,16 @@
 import { IChatPrivadoResponse } from '../../../../../../../domain/responses/chats.responses';
 import { FotoPerfil } from '../../../../../../components/foto-perfil';
 
-export const HeaderMensajesPrivados = ({ chat }: { chat: IChatPrivadoResponse }) => {
+export const HeaderMensajesPrivados = ({
+  chat,
+}: {
+  chat: IChatPrivadoResponse;
+}) => {
   return (
-    <header className="flex items-center gap-3 p-4 border-b border-gray-200 flex-shrink-0">
+    <header
+      className="flex items-center gap-3 p-4 relative top-1 border-b 
+    border-gray-200 flex-shrink-0"
+    >
       <FotoPerfil
         link_foto={chat.usuarioB.link_foto}
         nombre={chat.usuarioB.nombre}

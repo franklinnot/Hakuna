@@ -1,11 +1,11 @@
 import './public.page.css';
 import { PublicLayout } from '../../layouts/public-layout';
 import { useState } from 'react';
-import { LoginForm } from './components/login-form';
-import { RegisterForm } from './components/register-form';
-import { PublicHeader } from './components/public-header';
-import { PublicFooter } from './components/public-footer';
-import { PublicMain } from './components/public-main';
+import { LoginForm } from './components/forms/login-form';
+import { RegisterForm } from './components/forms/register-form';
+import { PublicHeader } from './components/structure/public-header';
+import { PublicFooter } from './components/structure/public-footer';
+import { PublicMain } from './components/structure/public-main';
 import { Modal } from '../../components/modal/modal';
 
 export const PublicPage = () => {

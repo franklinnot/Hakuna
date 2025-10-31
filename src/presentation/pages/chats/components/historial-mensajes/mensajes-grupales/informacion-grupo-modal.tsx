@@ -4,13 +4,13 @@ import { Button } from '../../../../../components/button';
 import { Input } from '../../../../../components/input';
 import { FotoPerfil } from '../../../../../components/foto-perfil';
 import { UploadFotoPerfil } from '../../../../../components/upload-foto-perfil/upload-foto-perfi';
-import { SeleccionarUsuarios } from '../../historial-chats/components/chats-grupales/components/seleccionar-usuarios';
-import { UsuarioSeleccionado } from '../../historial-chats/components/chats-grupales/types';
+import { SeleccionarUsuarios } from '../../historial-chats/components/chats-grupales/components/seleccionar-usuarios/seleccionar-usuarios';
 import { 
   UserGroupIcon,
   TrashIcon,
   PlusIcon
 } from '@heroicons/react/24/outline';
+import { IUsuarioResponse } from '../../../../../../domain/responses/usuarios.responses';
 
 interface GroupMember {
   id: string;
@@ -46,7 +46,7 @@ export const InformacionGrupoModal: React.FC<InformacionGrupoModalProps> = ({
   const [editedDescription, setEditedDescription] = useState(groupDescription);
   const [editedPhoto, setEditedPhoto] = useState<string | null | undefined>(undefined);
   const [showSearchModal, setShowSearchModal] = useState(false);
-  const [usuariosSeleccionados, setUsuariosSeleccionados] = useState<UsuarioSeleccionado[]>([]);
+  const [usuariosSeleccionados, setUsuariosSeleccionados] = useState<IUsuarioResponse[]>([]);
 
   const handleSave = () => {
     // Solo enviar la foto si se cambió (editedPhoto !== undefined)
@@ -57,7 +57,7 @@ export const InformacionGrupoModal: React.FC<InformacionGrupoModalProps> = ({
 
 
 
-  const handleUsuariosSeleccionados = (usuarios: UsuarioSeleccionado[]) => {
+  const handleUsuariosSeleccionados = (usuarios: IUsuarioResponse[]) => {
     // Convertir usuarios seleccionados al formato de miembros
     const nuevosIntegrantes = usuarios.map(usuario => ({
       id: usuario.id_usuario,

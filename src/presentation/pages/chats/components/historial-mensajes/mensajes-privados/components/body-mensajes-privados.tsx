@@ -4,12 +4,15 @@ import {
   ExclamationTriangleIcon,
 } from '@heroicons/react/24/solid';
 import clsx from 'clsx';
-import { useMensajesPrivadosFlow } from '../hooks/useMensajesPrivadosFlow';
+import { useShowMensajesPrivadosFlow } from './input-mensaje-privado/hooks/useShowMensajesPrivadosFlow';
 import { MensajesPrivadosProps } from '../mensajes-privados';
-import { EstadoEnvioMensaje } from '../../../../../../../domain/enums';
+import { EstadoEnvioMensaje, TipoArchivo } from '../../../../../../../domain/enums';
 
-export const BodyMensajesPrivados = ({ chat, usuario }: MensajesPrivadosProps) => {
-  const { mensajes, scrollRef } = useMensajesPrivadosFlow(chat, usuario);
+export const BodyMensajesPrivados = ({
+  chat,
+  usuario,
+}: MensajesPrivadosProps) => {
+  const { mensajes, scrollRef } = useShowMensajesPrivadosFlow(chat);
 
   return (
     <main
@@ -48,6 +51,44 @@ export const BodyMensajesPrivados = ({ chat, usuario }: MensajesPrivadosProps) =
                 )}
               >
                 {m.descripcion && <p>{m.descripcion}</p>}
+
+                {m.archivos && m.archivos.length > 0 && (
+                  <div className="mt-2 flex flex-col gap-2">
+                    {m.archivos.map((a, i) => {
+                      if (a.tipo_archivo === TipoArchivo.IMAGEN)
+                        return (
+                          <img
+                            key={i}
+                            src={a.link || undefined}
+                            alt="imagen"
+                            className="max-w-xs rounded-lg shadow-sm"
+                          />
+                        );
+
+                      if (a.tipo_archivo === TipoArchivo.AUDIO)
+                        return (
+                          <audio
+                            key={i}
+                            controls
+                            src={a.link || undefined}
+                            className="w-56 rounded-lg"
+                          />
+                        );
+
+                      return (
+                        <a
+                          key={i}
+                          href={a.link || undefined}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm text-indigo-600 underline"
+                        >
+                          {a.nombre || 'Archivo adjunto'}
+                        </a>
+                      );
+                    })}
+                  </div>
+                )}
 
                 <div className="flex items-center justify-end gap-2 mt-1 text-[10px]">
                   <span

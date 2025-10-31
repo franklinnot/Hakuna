@@ -18,9 +18,15 @@ export const HistorialMensajes = () => {
   }, [id_chatActivo]);
 
   return (
-    <div className="flex flex-col size-full rounded-2xl overflow-hidden bg-gray-800">
+    <div
+      className="flex flex-col size-full rounded-2xl overflow-hidden 
+      bg-gray-800"
+    >
       {!chatActivo && (
-        <div className="flex items-center justify-center flex-1 text-gray-400">
+        <div
+          className="flex items-center justify-center flex-1 
+        text-gray-400"
+        >
           <p>Selecciona un chat para comenzar</p>
         </div>
       )}

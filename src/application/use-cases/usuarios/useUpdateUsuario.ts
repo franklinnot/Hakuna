@@ -26,13 +26,12 @@ export const useUpdateUsuario = () => {
       const response = await UsuariosService.updateUsuario(result.data);
       if (!response.success || !response.data) {
         setError(response.error ?? 'Error al actualizar usuario.');
+        setIsLoading(false);
         return;
       }
 
       // Actualizar usuario globalmente
       setUsuario(response.data);
-
-      return response.data;
     } catch (err) {
       console.error('Error en updateUsuario:', err);
       setError('No se pudo actualizar el usuario.');

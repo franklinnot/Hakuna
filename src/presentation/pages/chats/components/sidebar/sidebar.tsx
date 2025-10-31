@@ -6,8 +6,8 @@ import {
 import { Button } from '../../../../components/button';
 import { ArrowLeftEndOnRectangleIcon } from '@heroicons/react/24/solid';
 import { AppStore } from '../../../../../application/store/app.store';
-import { Profile } from './components/profile';
-import { AddUser } from './components/add-user';
+import { Profile } from './components/profile/profile';
+import { AddUser } from './components/add-user/add-user';
 import { ModalRelativo } from '../../../../components/modal/modal-relativo';
 import { TipoChats } from '../../../../../domain/enums';
 import { useState, useRef } from 'react';
@@ -16,7 +16,7 @@ import { useCerrarSesion } from '../../../../../application/use-cases/auth/useCe
 
 export const Sidebar = () => {
   const { cerrarSesion } = useCerrarSesion();
-  const setTipoChatsActivo = AppStore((state) => state.setTipoChatsActivo);
+  const { setTipoChatsActivo } = AppStore();
   const tipoChatsActivo = AppStore((state) => state.tipoChatsActivo);
   const usuario = AppStore((state) => state.usuario);
 
@@ -86,7 +86,7 @@ export const Sidebar = () => {
         onClick={handleOpenAddUser}
         title="Buscar usuarios"
       >
-        <UserPlusIcon className="size-[24px] stroke-[1.5]" />
+        <UserPlusIcon className="size-[24px] stroke-[1.5] pointer-events-none" />
       </Button>
 
       {/* Chats privados */}
@@ -97,7 +97,10 @@ export const Sidebar = () => {
         onClick={handleOpenChatsPrivados}
         title="Chats privados"
       >
-        <ChatBubbleOvalLeftEllipsisIcon className="size-[24px] stroke-[1.5]" />
+        <ChatBubbleOvalLeftEllipsisIcon
+          className="size-[24px] stroke-[1.5] 
+          pointer-events-none"
+        />
       </Button>
 
       {/* Chats grupales */}
@@ -108,18 +111,21 @@ export const Sidebar = () => {
         onClick={handleOpenChatsGrupales}
         title="Chats grupales"
       >
-        <UserGroupIcon className="size-[24px] stroke-[1.5]" />
+        <UserGroupIcon className="size-[24px] stroke-[1.5] pointer-events-none" />
       </Button>
 
       {/* Cerrar sesión */}
       <Button
         className="size-12 p-2 flex items-center justify-center 
-        mt-auto bg-[var(--green-primary)] hover:bg-[var(--green-dark)] hover:scale-125
-        transition-transform duration-200 ease-in-out"
+        mt-auto bg-[var(--green-primary)] hover:bg-[var(--green-dark)]
+        transition-transform duration-200 ease-in-out hover:scale-125"
         onClick={() => cerrarSesion()}
         title="Cerrar sesión"
       >
-        <ArrowLeftEndOnRectangleIcon className="size-[24px] stroke-[1.5]" />
+        <ArrowLeftEndOnRectangleIcon
+          className="size-[24px] stroke-[1.5] 
+        pointer-events-none fill-blue-100"
+        />
       </Button>
 
       {/* MODAL */}
