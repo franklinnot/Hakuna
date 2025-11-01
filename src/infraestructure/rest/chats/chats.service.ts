@@ -29,6 +29,13 @@ export class ChatsService {
     return data;
   };
 
+  public static getChatGrupal = async (
+    id_chat: string,
+  ): Promise<IRespuesta<IChatGrupalResponse>> => {
+    const { data } = await api.get(`${this.ROUTE}/grupal/${id_chat}`);
+    return data;
+  };
+
   public static createChatGrupal = async (datosGrupo: {
     nombre: string;
     descripcion: string;
@@ -50,6 +57,27 @@ export class ChatsService {
     const { data } = await api.put(
       `${this.ROUTE}/grupal/${id_chat}`,
       datosActualizacion,
+    );
+    return data;
+  };
+
+  public static addMemberToGroup = async (
+    id_chat: string,
+    id_usuario: string,
+  ): Promise<IRespuesta<IChatGrupalResponse>> => {
+    const { data } = await api.post(
+      `${this.ROUTE}/grupal/${id_chat}/miembros`,
+      { id_usuario },
+    );
+    return data;
+  };
+
+  public static removeMemberFromGroup = async (
+    id_chat: string,
+    id_usuario: string,
+  ): Promise<IRespuesta<IChatGrupalResponse>> => {
+    const { data } = await api.delete(
+      `${this.ROUTE}/grupal/${id_chat}/miembros/${id_usuario}`,
     );
     return data;
   };

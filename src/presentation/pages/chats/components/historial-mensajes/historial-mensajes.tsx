@@ -43,7 +43,6 @@ export const HistorialMensajes = () => {
         <MensajesGrupales
           key={chatActivo.id_chat}
           chat={chatActivo as IChatGrupalResponse}
-          usuario={usuario!}
         />
       )}
     </div>
