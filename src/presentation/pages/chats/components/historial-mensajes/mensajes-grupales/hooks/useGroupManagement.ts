@@ -82,12 +82,9 @@ export const useGroupManagement = (chat: IChatGrupalResponse) => {
         // Actualizar el store con los nuevos datos del chat
         updateChatGrupal(response.data);
         
-        // Recargar los mensajes para reflejar que los mensajes del miembro eliminado ya no aparecen
-        const chatsPrivados = AppStore.getState().chatsPrivados;
-        const chatsGrupales = AppStore.getState().chatsGrupales;
-        await getMensajes(() => {}, chatsPrivados, chatsGrupales);
-        
-        console.log('Miembro eliminado exitosamente y mensajes recargados');
+        // Los eventos de socket se encargan de las actualizaciones necesarias
+        // No es necesario recargar mensajes manualmente
+        console.log('Miembro eliminado exitosamente');
       } else {
         console.error('Error al quitar miembro:', response.error);
         alert('Error al eliminar el miembro del grupo: ' + response.error);
@@ -109,11 +106,8 @@ export const useGroupManagement = (chat: IChatGrupalResponse) => {
         // Actualizar el chat en el store con los nuevos datos
         updateChatGrupal(response.data);
         
-        // Recargar mensajes para que el nuevo miembro pueda ver el historial
-        const chatsPrivados = AppStore.getState().chatsPrivados;
-        const chatsGrupales = AppStore.getState().chatsGrupales;
-        getMensajes(() => {}, chatsPrivados, chatsGrupales);
-        
+        // Los eventos de socket se encargan de las actualizaciones necesarias
+        // El nuevo miembro recibirá el historial completo a través del backend
         console.log('Miembro agregado exitosamente');
       } else {
         console.error('Error al agregar miembro:', response.error);
@@ -125,6 +119,36 @@ export const useGroupManagement = (chat: IChatGrupalResponse) => {
     }
   };
 
+  const handleDeleteGroup = async () => {
+    try {
+      // Confirmar la eliminación del grupo
+      const confirmDelete = window.confirm(
+        '¿Estás seguro de que quieres eliminar este grupo? Esta acción no se puede deshacer.'
+      );
+      
+      if (!confirmDelete) {
+        return;
+      }
+
+      const response = await ChatsService.deleteGroup(chat.id_chat);
+      
+      if (response.success) {
+        // Cerrar el modal
+        setIsConfigModalOpen(false);
+        
+        // TODO: Redirigir a la lista de chats o actualizar el store
+        console.log('Grupo eliminado exitosamente');
+        alert('Grupo eliminado exitosamente');
+      } else {
+        console.error('Error al eliminar grupo:', response.error);
+        alert('Error al eliminar el grupo: ' + response.error);
+      }
+    } catch (error) {
+      console.error('Error al eliminar grupo:', error);
+      alert('Error al eliminar el grupo. Inténtalo de nuevo.');
+    }
+  };
+
   return {
     isConfigModalOpen,
     handleInfoGrupo,
@@ -133,5 +157,6 @@ export const useGroupManagement = (chat: IChatGrupalResponse) => {
     handleUpdateGroup,
     handleRemoveMember,
     handleAddMember,
+    handleDeleteGroup,
   };
 };

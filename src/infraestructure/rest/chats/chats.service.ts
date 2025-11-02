@@ -81,4 +81,11 @@ export class ChatsService {
     );
     return data;
   };
+
+  public static deleteGroup = async (
+    id_chat: string,
+  ): Promise<IRespuesta<any>> => {
+    const { data } = await api.delete(`${this.ROUTE}/grupal/${id_chat}`);
+    return data;
+  };
 }

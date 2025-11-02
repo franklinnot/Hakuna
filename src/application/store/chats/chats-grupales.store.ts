@@ -40,9 +40,19 @@ export const ChatsGrupalesStore: StateCreator<
   // actualiza un chat grupal existente (y el activo si corresponde)
   updateChatGrupal: (data: IChatGrupalResponse) =>
     set((state) => {
-      const actualizados = state.chatsGrupales.map((chat) =>
-        chat.id_chat === data.id_chat ? data : chat,
-      );
+      const actualizados = state.chatsGrupales.map((chat) => {
+        if (chat.id_chat !== data.id_chat) return chat;
+        
+        // Preservar el historial de mensajes existente si el nuevo data tiene menos mensajes
+        const historialPreservado = data.historial_mensajes.length < chat.historial_mensajes.length
+          ? chat.historial_mensajes
+          : data.historial_mensajes;
+        
+        return {
+          ...data,
+          historial_mensajes: historialPreservado,
+        };
+      });
 
       return { chatsGrupales: actualizados };
     }),

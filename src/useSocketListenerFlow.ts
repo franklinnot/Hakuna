@@ -2,6 +2,8 @@ import { useEffect } from 'react';
 import { useRecibirMensajePrivado } from './application/use-cases/mensajes/useRecibirMensajePrivado';
 import { useRecibirMensajeGrupal } from './application/use-cases/mensajes/useRecibirMensajeGrupal';
 import { useRecibirNuevoIntegrante } from './application/use-cases/mensajes/useRecibirNuevoIntegrante';
+import { useRecibirIntegranteEliminado } from './application/use-cases/mensajes/useRecibirIntegranteEliminado';
+import { useRecibirGrupoEliminado } from './application/use-cases/mensajes/useRecibirGrupoEliminado';
 import { connectSocket } from './infraestructure/socket/socket.client';
 import { AppStore } from './application/store/app.store';
 
@@ -9,6 +11,8 @@ export const useSocketListenerFlow = () => {
   useRecibirMensajePrivado();
   useRecibirMensajeGrupal();
   useRecibirNuevoIntegrante();
+  useRecibirIntegranteEliminado();
+  useRecibirGrupoEliminado();
 
   useEffect(() => {
     const token = AppStore.getState().token;

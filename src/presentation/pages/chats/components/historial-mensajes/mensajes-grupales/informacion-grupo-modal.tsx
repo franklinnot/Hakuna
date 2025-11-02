@@ -26,9 +26,11 @@ interface InformacionGrupoModalProps {
   groupDescription: string;
   groupPhoto?: string | null;
   members: GroupMember[];
+  currentUserId: string; // ID del usuario actual
   onUpdateGroup: (name: string, description: string, photo?: string | null) => void;
   onRemoveMember: (memberId: string) => void;
   onAddMember: (member: GroupMember) => void;
+  onDeleteGroup?: () => void; // Nueva prop para eliminar grupo
 }
 
 export const InformacionGrupoModal: React.FC<InformacionGrupoModalProps> = ({
@@ -38,15 +40,20 @@ export const InformacionGrupoModal: React.FC<InformacionGrupoModalProps> = ({
   groupDescription,
   groupPhoto,
   members,
+  currentUserId,
   onUpdateGroup,
   onRemoveMember,
   onAddMember,
+  onDeleteGroup,
 }) => {
   const [editedName, setEditedName] = useState(groupName);
   const [editedDescription, setEditedDescription] = useState(groupDescription);
   const [editedPhoto, setEditedPhoto] = useState<string | null | undefined>(undefined);
   const [showSearchModal, setShowSearchModal] = useState(false);
   const [usuariosSeleccionados, setUsuariosSeleccionados] = useState<IUsuarioResponse[]>([]);
+
+  // Verificar si el usuario actual es administrador del grupo
+  const isCurrentUserAdmin = members.find(member => member.id === currentUserId)?.isAdmin || false;
 
   const handleSave = () => {
     // Solo enviar la foto si se cambió (editedPhoto !== undefined)
@@ -139,16 +146,18 @@ export const InformacionGrupoModal: React.FC<InformacionGrupoModalProps> = ({
                   Participantes
                 </h3>
 
-                {/* Botón Añadir arriba del listado */}
-                <button
-                  onClick={() => setShowSearchModal(true)}
-                  className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg transition-colors"
-                >
-                  <div className="w-8 h-8 bg-[var(--green-primary)] hover:bg-[var(--green-primary)]/90 rounded-full flex items-center justify-center">
-                    <PlusIcon className="h-4 w-4 text-white" />
-                  </div>
-                  <span className="text-gray-700 font-medium">Agregar participante</span>
-                </button>
+                {/* Botón Añadir arriba del listado - Solo visible para administradores */}
+                {isCurrentUserAdmin && (
+                  <button
+                    onClick={() => setShowSearchModal(true)}
+                    className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg transition-colors"
+                  >
+                    <div className="w-8 h-8 bg-[var(--green-primary)] hover:bg-[var(--green-primary)]/90 rounded-full flex items-center justify-center">
+                      <PlusIcon className="h-4 w-4 text-white" />
+                    </div>
+                    <span className="text-gray-700 font-medium">Agregar participante</span>
+                  </button>
+                )}
 
                 {/* Información de cantidad de participantes */}
                 <p className="text-sm text-gray-600">{members.length} participantes</p>
@@ -168,8 +177,8 @@ export const InformacionGrupoModal: React.FC<InformacionGrupoModalProps> = ({
                           <p className="text-sm text-gray-600">Admin del grupo</p>
                         )}
                       </div>
-                      {/* Solo mostrar botón de eliminar si NO es admin */}
-                      {!member.isAdmin && (
+                      {/* Solo mostrar botón de eliminar si el usuario actual es admin y el miembro NO es admin */}
+                      {isCurrentUserAdmin && !member.isAdmin && (
                         <button
                           onClick={() => onRemoveMember(member.id)}
                           className="w-8 h-8 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-colors"
@@ -185,8 +194,20 @@ export const InformacionGrupoModal: React.FC<InformacionGrupoModalProps> = ({
             </div>
           </div>
 
-          {/* Botón guardar con ícono de check */}
-          <div className="p-4 border-t border-gray-200">
+          {/* Botones de acción */}
+          <div className="p-4 border-t border-gray-200 space-y-3">
+            {/* Botón eliminar grupo - solo para administradores */}
+            {isCurrentUserAdmin && onDeleteGroup && (
+              <Button
+                onClick={onDeleteGroup}
+                className="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-3 rounded-lg flex items-center justify-center gap-2"
+              >
+                <TrashIcon className="h-5 w-5" />
+                Eliminar Grupo
+              </Button>
+            )}
+            
+            {/* Botón guardar con ícono de check */}
             <Button
               onClick={handleSave}
               className="w-full bg-[var(--green-primary)] hover:bg-[var(--green-dark)] text-white font-medium py-3 rounded-lg flex items-center justify-center gap-2"

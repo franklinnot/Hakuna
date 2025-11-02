@@ -39,6 +39,7 @@ export enum TipoEvento {
   NUEVO_INTEGRANTE = 'nuevoIntegrante',
   INTEGRANTE_ACTUALIZADO = 'integranteActualizado',
   INTEGRANTE_ELIMINADO = 'integranteEliminado',
+  GRUPO_ELIMINADO = 'grupoEliminado',
 }
 
 export enum EstadoEnvioMensaje {

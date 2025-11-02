@@ -26,7 +26,7 @@ export interface IAppStore {
 
   // chats
   setTipoChatsActivo: (data: TipoChats) => void;
-  setIdChatActivo: (id_chat: string) => void;
+  setIdChatActivo: (id_chat: string | null) => void;
   getChatActivo: () => IChatPrivadoResponse | IChatGrupalResponse | null;
 
   // Chats privados

@@ -4,6 +4,7 @@ import { MicrophoneIcon, XMarkIcon } from '@heroicons/react/24/solid';
 import { useSendMensajeGrupal } from '../../../../../../../../application/use-cases/mensajes/useSendMensajeGrupal';
 import { useAudioRecorder } from '../../hooks/useAudioRecorder';
 import { useFileHandling } from './hooks/useFileHandling';
+import { Estado } from '../../../../../../../../domain/enums';
 
 interface InputMensajeGrupalProps {
   chat: IChatGrupalResponse;
@@ -13,6 +14,9 @@ export const InputMensajeGrupal = ({
   chat,
 }: InputMensajeGrupalProps) => {
   const [descripcion, setDescripcion] = useState('');
+  
+  // Verificar si el usuario actual está deshabilitado en el grupo
+  const isUserDisabled = chat.estado_miembro === Estado.DESHABILITADO;
 
   // Hooks personalizados
   const { sendMensajeGrupal, isLoading } = useSendMensajeGrupal();
@@ -33,7 +37,7 @@ export const InputMensajeGrupal = ({
   } = useFileHandling();
 
   const handleSend = async () => {
-    if (isLoading) return;
+    if (isLoading || isUserDisabled) return;
     const trimmed = descripcion.trim();
 
     // convertir audio a base64 (solo si existe)
@@ -57,6 +61,18 @@ export const InputMensajeGrupal = ({
     clearArchivos();
     clearAudio();
   };
+
+  // Si el usuario está deshabilitado, mostrar mensaje informativo
+  if (isUserDisabled) {
+    return (
+      <footer className="flex items-center justify-center p-3 border-t border-gray-200 bg-gray-50">
+        <div className="text-center text-gray-500">
+          <p className="text-sm">No puedes enviar mensajes en este grupo</p>
+          <p className="text-xs text-gray-400">Has sido eliminado del grupo</p>
+        </div>
+      </footer>
+    );
+  }
 
   return (
     <footer className="flex flex-col gap-2 p-3 border-t border-gray-200 bg-white">

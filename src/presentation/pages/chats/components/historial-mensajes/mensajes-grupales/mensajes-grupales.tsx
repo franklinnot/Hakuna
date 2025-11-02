@@ -25,6 +25,7 @@ export const MensajesGrupales = ({
     handleUpdateGroup,
     handleRemoveMember,
     handleAddMember,
+    handleDeleteGroup,
   } = useGroupManagement(chat);
 
   return (
@@ -58,9 +59,11 @@ export const MensajesGrupales = ({
             avatar: integrante.link_foto,
             isAdmin: integrante.is_admin,
           }))}
+          currentUserId={usuario?.id_usuario || ''}
           onUpdateGroup={handleUpdateGroup}
           onRemoveMember={handleRemoveMember}
           onAddMember={handleAddMember}
+          onDeleteGroup={handleDeleteGroup}
         />
       )}
     </section>
