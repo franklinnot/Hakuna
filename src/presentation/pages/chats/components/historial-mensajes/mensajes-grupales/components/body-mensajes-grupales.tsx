@@ -76,7 +76,7 @@ export const BodyMensajesGrupales = ({
       className="flex-1 flex flex-col p-4 overflow-y-auto bg-gray-50"
     >
       {mensajesDelStore.length === 0 ? (
-        <p className="text-center text-gray-400 italic mt-10">
+        <p className="text-center text-gray-500 italic mt-10">
           No hay mensajes aún.
         </p>
       ) : (
@@ -113,7 +113,7 @@ export const BodyMensajesGrupales = ({
                 {!esMio && (
                   <p
                     className={`text-xs font-semibold mb-1 ${
-                      esMio ? 'text-indigo-200' : 'text-gray-600'
+                      esMio ? 'text-indigo-500' : 'text-gray-600'
                     }`}
                   >
                     {nombreUsuario}

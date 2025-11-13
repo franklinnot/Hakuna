@@ -14,7 +14,7 @@ export const PublicHeader = ({
         className="mx-auto flex w-full max-w-screen-xl items-center 
         justify-between rounded-xl bg-black/40 p-4 px-6 backdrop-blur-sm"
       >
-        <Image src="logo-name.svg" className="h-8 w-auto" />
+        <Image src="logo-name.svg"  alt="Logo de hakuna" className="h-8 w-auto" />
         <div className="flex items-center gap-6 md:gap-10">
           <a href="">Nosotros</a>
           <a href="">Soporte</a>

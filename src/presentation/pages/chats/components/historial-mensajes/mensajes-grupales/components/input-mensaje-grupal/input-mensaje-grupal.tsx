@@ -68,7 +68,7 @@ export const InputMensajeGrupal = ({
       <footer className="flex items-center justify-center p-3 border-t border-gray-200 bg-gray-50">
         <div className="text-center text-gray-500">
           <p className="text-sm">No puedes enviar mensajes en este grupo</p>
-          <p className="text-xs text-gray-400">Has sido eliminado del grupo</p>
+          <p className="text-xs text-gray-500">Has sido eliminado del grupo</p>
         </div>
       </footer>
     );

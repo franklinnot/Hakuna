@@ -33,7 +33,7 @@ export const UploadFotoPerfil = ({
             className="object-cover w-full h-full"
           />
         ) : (
-          <UserIcon className="w-10 h-10 text-gray-400" />
+          <UserIcon className="w-10 h-10 text-gray-500" />
         )}
 
         <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">

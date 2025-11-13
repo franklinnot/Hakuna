@@ -20,7 +20,7 @@ export const BodyMensajesPrivados = ({
       className="flex-1 flex flex-col p-4 overflow-y-auto bg-gray-50"
     >
       {mensajes.length === 0 ? (
-        <p className="text-center text-gray-400 italic mt-10">
+        <p className="text-center text-gray-500 italic mt-10">
           No hay mensajes aún.
         </p>
       ) : (

@@ -25,7 +25,7 @@ export const HistorialMensajes = () => {
       {!chatActivo && (
         <div
           className="flex items-center justify-center flex-1 
-        text-gray-400"
+        text-gray-500"
         >
           <p>Selecciona un chat para comenzar</p>
         </div>

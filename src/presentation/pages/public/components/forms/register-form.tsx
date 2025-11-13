@@ -53,7 +53,7 @@ export const RegisterForm = ({
       <div className="block w-full relative mt-3">
         <IdentificationIcon
           className="absolute left-3 top-1/2 h-5 w-5 
-          -translate-y-1/2 text-gray-400"
+          -translate-y-1/2 text-gray-500"
         />
         <Input
           placeholder="Nombre"
@@ -69,7 +69,7 @@ export const RegisterForm = ({
       <div className="block w-full relative">
         <UserIcon
           className="absolute left-3 top-1/2 h-5 w-5 
-          -translate-y-1/2 text-gray-400"
+          -translate-y-1/2 text-gray-500"
         />
         <Input
           placeholder="Nombre de usuario"
@@ -86,7 +86,7 @@ export const RegisterForm = ({
       <div className="block w-full relative">
         <LockClosedIcon
           className="absolute left-3 top-1/2 h-5 w-5 
-          -translate-y-1/2 text-gray-400"
+          -translate-y-1/2 text-gray-500"
         />
         <Input
           type="password"

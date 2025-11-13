@@ -21,7 +21,7 @@ export const HeaderMensajesPrivados = ({
         <span className="font-semibold text-gray-800 text-lg">
           {chat.usuarioB.nombre}
         </span>
-        <span className="text-sm text-gray-400">@{chat.usuarioB.username}</span>
+        <span className="text-sm text-gray-500">@{chat.usuarioB.username}</span>
       </div>
     </header>
   );

@@ -35,7 +35,7 @@ export const LoginForm = ({
     >
       {isLoading && <LoadingScreen />}
       <div className="block w-full relative">
-        <UserIcon className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
+        <UserIcon className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-500" />
         <Input
           placeholder="Nombre de usuario"
           value={username}
@@ -50,7 +50,7 @@ export const LoginForm = ({
       </div>
 
       <div className="block w-full relative">
-        <LockClosedIcon className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
+        <LockClosedIcon className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-500" />
         <Input
           type="password"
           placeholder="Contraseña"

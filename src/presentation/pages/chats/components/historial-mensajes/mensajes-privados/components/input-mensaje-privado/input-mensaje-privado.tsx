@@ -192,6 +192,7 @@ export const InputMensajePrivado = ({
         <button
           onClick={enviar}
           disabled={!canSend || isSending}
+          aria-label="Enviar mensaje"
           className={`size-10 rounded-xl flex items-center justify-center transition-all shadow-md ${
             canSend
               ? 'bg-indigo-500 hover:bg-indigo-600'

@@ -63,7 +63,7 @@ export const ChatGrupalCard = ({
 
       {/* Hora del último mensaje */}
       {tieneHistorial && (
-        <span className="text-xs text-gray-400 ml-2 flex-shrink-0">
+        <span className="text-xs text-gray-500 ml-2 flex-shrink-0">
           {formatLocalDate(ultimoMensaje.createdAt, 'time-date')}
         </span>
       )}

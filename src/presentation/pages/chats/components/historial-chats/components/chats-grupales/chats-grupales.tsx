@@ -60,7 +60,7 @@ export const ChatsGrupales = () => {
             />
           ))
         ) : (
-          <div className="text-center text-gray-400 py-8">
+          <div className="text-center text-gray-500 py-8">
             <p className="text-sm">No tienes grupos aún</p>
             <p className="text-xs mt-1">
               Crea tu primer grupo haciendo clic en +

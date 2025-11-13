@@ -75,8 +75,8 @@ export const ChatPrivadoCard = ({
 
       {!isLoading && hora && (
         <div className="flex flex-col justify-end text-right">
-          <span className="text-xs text-gray-400">{hora}</span>
-          {fecha && <span className="text-xs text-gray-400">{fecha}</span>}
+          <span className="text-xs text-gray-500">{hora}</span>
+          {fecha && <span className="text-xs text-gray-500">{fecha}</span>}
         </div>
       )}
     </div>
