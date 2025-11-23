@@ -13,7 +13,7 @@ export const MensajesPrivados = ({ chat, usuario }: MensajesPrivadosProps) => {
   return (
     <section
       className="flex flex-col w-full h-full rounded-3xl overflow-hidden 
-      shadow-xl bg-white"
+      shadow-xl"
     >
       {/* HEADER */}
       <HeaderMensajesPrivados chat={chat} />

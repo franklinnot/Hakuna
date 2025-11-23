@@ -17,7 +17,7 @@ export const BodyMensajesPrivados = ({
   return (
     <main
       ref={scrollRef}
-      className="flex-1 flex flex-col p-4 overflow-y-auto bg-gray-50"
+      className="flex-1 flex flex-col p-4 overflow-y-auto bg-gray-800 scrollbar-custom-auto"
     >
       {mensajes.length === 0 ? (
         <p className="text-center text-gray-400 italic mt-10">

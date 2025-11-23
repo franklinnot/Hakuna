@@ -1,15 +1,18 @@
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useState } from 'react';
 import {
   PaperAirplaneIcon,
   PhotoIcon,
   MicrophoneIcon,
   XMarkIcon,
+  PaperClipIcon,
 } from '@heroicons/react/24/solid';
+
 import { useInputMensajePrivadoFlow } from './hooks/useInputMensajePrivadoFlow';
 import { useFileUploader } from './hooks/useFileUploader';
 import { useAudioRecorder } from './hooks/useAudioRecorder';
 import { IChatPrivadoResponse } from '../../../../../../../../domain/responses/chats.responses';
 import { IUsuarioResponse } from '../../../../../../../../domain/responses/usuarios.responses';
+import AudioRecordingBar from './components/audio-recording-bar';
 
 export const InputMensajePrivado = ({
   chat,
@@ -18,18 +21,20 @@ export const InputMensajePrivado = ({
   chat: IChatPrivadoResponse;
   usuario: IUsuarioResponse;
 }) => {
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  // ---------------------------------------
+  //  HOOKS
+  // ---------------------------------------
 
-  // ---- hooks de negocio ----
-  const { setArchivos, handleSend, isSending } = useInputMensajePrivadoFlow(
-    chat,
-    usuario,
-  );
+  const { setArchivos, handleSend } = useInputMensajePrivadoFlow(chat, usuario);
+
   const { imagenes, handleFiles, handlePaste, clearImagenes, toArchivos } =
     useFileUploader();
+
   const {
     isRecording,
     audioBlob,
+    analyser,
+    time,
     startRecording,
     stopRecording,
     clearAudio,
@@ -37,8 +42,12 @@ export const InputMensajePrivado = ({
   } = useAudioRecorder();
 
   const [desc, setDesc] = useState('');
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // ---- ajustar altura dinámica del textarea ----
+  // ---------------------------------------
+  //  AUTO-ALTURA DEL TEXTAREA
+  // ---------------------------------------
+
   const ajustarAltura = () => {
     const el = textareaRef.current;
     if (!el) return;
@@ -46,17 +55,15 @@ export const InputMensajePrivado = ({
     el.style.height = `${Math.min(el.scrollHeight, 160)}px`;
   };
 
-  useEffect(() => {
-    ajustarAltura();
-  }, [desc]);
+  // ---------------------------------------
+  //  MANEJO DE ARCHIVOS
+  // ---------------------------------------
 
-  // ---- manejar selección de imágenes ----
   const handleSelectFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
     handleFiles(e.target.files);
   };
 
-  // ---- quitar imagen del preview ----
   const handleRemoveImage = (index: number) => {
     const nuevas = [...imagenes];
     nuevas.splice(index, 1);
@@ -64,43 +71,46 @@ export const InputMensajePrivado = ({
     if (nuevas.length > 0) handleFiles(nuevas);
   };
 
-  // ---- preparar y enviar mensaje ----
+  // ---------------------------------------
+  //  ENVIAR MENSAJE
+  // ---------------------------------------
+
   const enviar = async () => {
-    if (isSending) return;
     const trimmed = desc.trim();
 
-    // convertir imágenes y audio a base64 (solo si existen)
+    if (trimmed) {
+      setDesc('');
+    }
+
     const imagenArchivos = await toArchivos();
     const audioArchivo = await toArchivo();
+
     const adjuntos = [
       ...(imagenArchivos ?? []),
       ...(audioArchivo ? [audioArchivo] : []),
     ];
 
-    // si no hay texto ni adjuntos, no enviar nada
     if (!trimmed && !adjuntos.length) return;
 
     setArchivos(adjuntos);
     await handleSend(trimmed, adjuntos);
 
-    // limpiar estados
-    setDesc('');
     clearImagenes();
     clearAudio();
   };
 
-  // ---- preview de audio grabado ----
   const audioURL = audioBlob ? URL.createObjectURL(audioBlob) : null;
 
   const canSend =
-    desc.trim().length > 0 ||
-    imagenes.length > 0 ||
-    audioBlob !== null ||
-    isRecording;
+    desc.trim().length > 0 || imagenes.length > 0 || audioBlob !== null;
+
+  // ---------------------------------------
+  //  RENDER
+  // ---------------------------------------
 
   return (
-    <footer className="flex flex-col gap-2 p-3 border-t border-gray-200 bg-white">
-      {/* preview de imágenes */}
+    <footer className="flex flex-col border-t border-gray-600 bg-gray-800 p-2">
+      {/* PREVIEW DE IMÁGENES */}
       {imagenes.length > 0 && (
         <div className="flex gap-2 overflow-x-auto pb-1">
           {imagenes.map((img, i) => (
@@ -121,86 +131,102 @@ export const InputMensajePrivado = ({
         </div>
       )}
 
-      {/* preview de audio grabado */}
+      {/* PREVIEW DE AUDIO */}
       {audioURL && (
-        <div className="flex items-center gap-2 bg-gray-100 p-2 rounded-lg">
+        <div className="flex items-center gap-2 bg-gray-700 p-2 px-3 rounded-lg">
           <audio controls src={audioURL} className="flex-1" />
-          <button
-            onClick={clearAudio}
-            className="bg-black/60 rounded-full p-1"
-            title="Eliminar audio"
-          >
+          <button onClick={clearAudio} className="bg-black/60 rounded-full p-1">
             <XMarkIcon className="size-3 text-white" />
           </button>
         </div>
       )}
 
-      {/* input de texto + botones */}
-      <div className="flex items-end gap-3" onPaste={handlePaste}>
-        {/* botón de imagen */}
-        <label className="cursor-pointer">
-          <PhotoIcon className="size-6 text-gray-500 hover:text-indigo-500" />
-          <input
-            type="file"
-            multiple
-            hidden
-            accept="image/*"
-            onChange={handleSelectFiles}
-          />
-        </label>
-
-        {/* botón de audio */}
-        {!isRecording ? (
-          <button
-            onClick={startRecording}
-            className="text-gray-500 hover:text-indigo-500"
-            title="Grabar audio"
+      {isRecording ? (
+        <AudioRecordingBar
+          analyser={analyser}
+          isRecording={isRecording}
+          time={time}
+          onCancel={clearAudio}
+          onSend={() => {
+            stopRecording();
+            enviar();
+          }}
+        />
+      ) : (
+        // INPUT PRINCIPAL
+        <div className="flex items-end gap-3 w-full" onPaste={handlePaste}>
+          {/* IMÁGENES */}
+          <label
+            className="text-gray-400 hover:bg-emerald-400 hover:text-gray-900 
+            p-1.5 rounded-xl transition-all cursor-pointer ml-2 mb-1.5"
           >
-            <MicrophoneIcon className="size-6" />
-          </button>
-        ) : (
-          <button
-            onClick={stopRecording}
-            className="text-red-500 animate-pulse"
-            title="Detener grabación"
-          >
-            <MicrophoneIcon className="size-6" />
-          </button>
-        )}
+            <PhotoIcon className="size-6" />
+            <input
+              type="file"
+              multiple
+              hidden
+              accept="image/*"
+              onChange={handleSelectFiles}
+            />
+          </label>
 
-        {/* textarea */}
-        <div className="flex-grow relative">
-          <textarea
-            ref={textareaRef}
-            placeholder="Escribe un mensaje..."
-            value={desc}
-            onChange={(e) => setDesc(e.target.value)}
-            onInput={ajustarAltura}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                enviar();
-              }
-            }}
-            rows={1}
-            disabled={isSending || isRecording}
-            className="w-full bg-gray-100 rounded-2xl px-4 py-2.5 resize-none text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-400 max-h-40 leading-relaxed placeholder-gray-400 disabled:opacity-50"
-          />
+          {/* ARCHIVOS */}
+          <label
+            className="text-gray-400 hover:bg-emerald-400 hover:text-gray-900
+            p-1.5 rounded-xl transition-all cursor-pointer mb-1.5"
+          >
+            <PaperClipIcon className="size-6" />
+            <input
+              type="file"
+              multiple
+              hidden
+              accept="image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip,.rar"
+              onChange={handleSelectFiles}
+            />
+          </label>
+
+          {/* TEXTAREA */}
+          <div className="flex flex-grow relative p-3 pl-3.5">
+            <textarea
+              ref={textareaRef}
+              placeholder="Escribe un mensaje..."
+              value={desc}
+              onChange={(e) => setDesc(e.target.value)}
+              onInput={ajustarAltura}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  enviar();
+                }
+              }}
+              rows={1}
+              className="w-full resize-none text-gray-100 focus:outline-none max-h-24 
+              leading-relaxed placeholder-gray-400 disabled:opacity-50 
+            caret-gray-200 scrollbar-custom-auto"
+            />
+          </div>
+
+          {/* MIC / ENVIAR */}
+          {!desc.trim().length ? (
+            <button
+              onClick={startRecording}
+              className="text-gray-400 hover:bg-emerald-400 hover:text-gray-900
+            p-1.5 rounded-xl transition-all cursor-pointer"
+            >
+              <MicrophoneIcon className="size-6" />
+            </button>
+          ) : (
+            <button
+              onClick={enviar}
+              disabled={!canSend}
+              className="text-gray-400 hover:bg-emerald-400 hover:text-gray-900
+            p-1.5 rounded-xl transition-all cursor-pointer"
+            >
+              <PaperAirplaneIcon className="size-6" />
+            </button>
+          )}
         </div>
-
-        {/* botón enviar */}
-        <button
-          onClick={enviar}
-          disabled={!canSend || isSending}
-          className={`size-10 rounded-xl flex items-center justify-center transition-all shadow-md ${
-            canSend
-              ? 'bg-indigo-500 hover:bg-indigo-600'
-              : 'bg-gray-300 cursor-not-allowed'
-          }`}
-        >
-          <PaperAirplaneIcon className="size-4 text-white" />
-        </button>
-      </div>
+      )}
     </footer>
   );
 };

@@ -11,7 +11,6 @@ export const useInputMensajePrivadoFlow = (
 ) => {
   const { sendMensajePrivado } = useSendMensajePrivado();
   const [archivos, setArchivos] = useState<ICrearArchivo[] | undefined>();
-  const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState<ErrorResponse>(null);
 
   const handleSend = async (
@@ -20,8 +19,6 @@ export const useInputMensajePrivadoFlow = (
   ) => {
     const trimmed = descripcion.trim();
     if (!trimmed && !archivos?.length) return;
-
-    setIsSending(true);
     setError(null);
 
     try {
@@ -29,15 +26,12 @@ export const useInputMensajePrivadoFlow = (
     } catch (err) {
       console.error('Error en handleSend', err);
       setError({ message: 'Error al enviar el mensaje' });
-    } finally {
-      setIsSending(false);
     }
   };
 
   return {
     archivos,
     setArchivos,
-    isSending,
     error,
     handleSend,
   };
