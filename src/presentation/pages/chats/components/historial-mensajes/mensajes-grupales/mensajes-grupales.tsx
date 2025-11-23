@@ -29,7 +29,7 @@ export const MensajesGrupales = ({
   } = useGroupManagement(chat);
 
   return (
-    <section className="flex flex-col h-full">
+    <section className="flex flex-col w-full h-full rounded-3xl overflow-hidden shadow-xl">
       <HeaderMensajesGrupales
         chat={chat}
         onInfoGrupo={handleInfoGrupo}

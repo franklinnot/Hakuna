@@ -47,7 +47,7 @@ export const HeaderMensajesGrupales = ({
           link_foto={chat.link_foto}
           nombre={chat.nombre}
           verPerfil={false}
-          className="size-10 flex-shrink-0"
+          className="size-10 flex-shrink-0 border-2 border-gray-700"
         />
         <div className="flex flex-col flex-1">
           <span className="font-semibold text-white text-lg">
@@ -62,10 +62,10 @@ export const HeaderMensajesGrupales = ({
         <button
           ref={menuButtonRef}
           onClick={handleToggleMenu}
-          className="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200 flex items-center justify-center"
+          className="p-2 rounded-full hover:bg-gray-700 transition-colors duration-200 flex items-center justify-center"
           title="Opciones del grupo"
         >
-          <EllipsisVerticalIcon className="h-5 w-5 text-gray-600" />
+          <EllipsisVerticalIcon className="h-5 w-5 text-gray-300" />
         </button>
       </header>
 
@@ -75,19 +75,20 @@ export const HeaderMensajesGrupales = ({
         onClose={handleCloseMenu}
         parentRef={menuButtonRef as React.RefObject<HTMLElement>}
         position="right"
+        variant="dark"
       >
         <div className="py-2 min-w-[200px]">
           <button
             onClick={handleInfoGrupo}
-            className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-50 transition-colors"
+            className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-700 transition-colors"
           >
-            <InformationCircleIcon className="h-5 w-5 text-gray-600" />
-            <span className="text-gray-800 font-medium">Info del grupo</span>
+            <InformationCircleIcon className="h-5 w-5 text-gray-300" />
+            <span className="text-gray-200 font-medium">Info del grupo</span>
           </button>
 
           <button
             onClick={handleSalirGrupo}
-            className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-50 transition-colors"
+            className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-700 transition-colors"
           >
             <ArrowLeftOnRectangleIcon className="h-5 w-5 text-red-500" />
             <span className="text-red-500 font-medium">Salir del grupo</span>

@@ -95,12 +95,13 @@ export const InformacionGrupoModal: React.FC<InformacionGrupoModalProps> = ({
         isOpen={isOpen}
         onClose={onClose}
         title="Información del Grupo"
+        variant="dark"
       >
         <div className="h-[500px] flex flex-col">
           {/* Configuración del grupo */}
           <div className="flex-1 overflow-y-auto">
             {/* Foto y datos del grupo */}
-            <div className="p-6 border-b border-gray-100">
+            <div className="p-6 border-b border-gray-700">
               <div className="flex flex-col items-center space-y-6">
                 {/* Foto del grupo centrada */}
                 <div className="relative">
@@ -113,7 +114,7 @@ export const InformacionGrupoModal: React.FC<InformacionGrupoModalProps> = ({
 
                 {/* Campos de texto debajo de la foto */}
                 <div className="w-full max-w-sm flex flex-col gap-4">
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-medium text-gray-200">
                     Nombre del grupo
                     <Input
                       type="text"
@@ -124,7 +125,7 @@ export const InformacionGrupoModal: React.FC<InformacionGrupoModalProps> = ({
                     />
                   </label>
                   
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-medium text-gray-200">
                     Descripción del grupo
                     <Input
                       type="text"
@@ -141,7 +142,7 @@ export const InformacionGrupoModal: React.FC<InformacionGrupoModalProps> = ({
             {/* Participantes */}
             <div className="p-4">
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                <h3 className="text-lg font-semibold text-gray-100 flex items-center gap-2">
                   <UserGroupIcon className="h-5 w-5" />
                   Participantes
                 </h3>
@@ -150,17 +151,17 @@ export const InformacionGrupoModal: React.FC<InformacionGrupoModalProps> = ({
                 {isCurrentUserAdmin && (
                   <button
                     onClick={() => setShowSearchModal(true)}
-                    className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg transition-colors"
+                    className="flex items-center gap-3 p-2 hover:bg-gray-700 rounded-lg transition-colors"
                   >
                     <div className="w-8 h-8 bg-[var(--green-primary)] hover:bg-[var(--green-primary)]/90 rounded-full flex items-center justify-center">
                       <PlusIcon className="h-4 w-4 text-white" />
                     </div>
-                    <span className="text-gray-700 font-medium">Agregar participante</span>
+                    <span className="text-gray-200 font-medium">Agregar participante</span>
                   </button>
                 )}
 
                 {/* Información de cantidad de participantes */}
-                <p className="text-sm text-gray-600">{members.length} participantes</p>
+                <p className="text-sm text-gray-300">{members.length} participantes</p>
 
                 <div className="space-y-2">
                   {/* Mostrar miembros */}
@@ -172,9 +173,9 @@ export const InformacionGrupoModal: React.FC<InformacionGrupoModalProps> = ({
                         className="w-10 h-10"
                       />
                       <div className="flex-1">
-                        <p className="font-medium text-gray-900">{member.name}</p>
+                        <p className="font-medium text-gray-100">{member.name}</p>
                         {member.isAdmin && (
-                          <p className="text-sm text-gray-600">Admin del grupo</p>
+                          <p className="text-sm text-gray-300">Admin del grupo</p>
                         )}
                       </div>
                       {/* Solo mostrar botón de eliminar si el usuario actual es admin y el miembro NO es admin */}
@@ -195,7 +196,7 @@ export const InformacionGrupoModal: React.FC<InformacionGrupoModalProps> = ({
           </div>
 
           {/* Botones de acción */}
-          <div className="p-4 border-t border-gray-200 space-y-3">
+          <div className="p-4 border-t border-gray-700 space-y-3">
             {/* Botón eliminar grupo - solo para administradores */}
             {isCurrentUserAdmin && onDeleteGroup && (
               <Button
@@ -223,6 +224,7 @@ export const InformacionGrupoModal: React.FC<InformacionGrupoModalProps> = ({
         isOpen={showSearchModal}
         onClose={() => setShowSearchModal(false)}
         title="Agregar participantes"
+        variant="dark"
       >
         <div className="h-96">
           <SeleccionarUsuarios
@@ -230,6 +232,7 @@ export const InformacionGrupoModal: React.FC<InformacionGrupoModalProps> = ({
             usuariosSeleccionados={usuariosSeleccionados}
             setUsuariosSeleccionados={setUsuariosSeleccionados}
             miembrosExistentes={members.map(member => member.id)}
+            variant="dark"
           />
         </div>
       </Modal>

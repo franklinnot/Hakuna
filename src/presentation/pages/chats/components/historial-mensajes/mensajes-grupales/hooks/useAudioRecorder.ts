@@ -1,34 +1,72 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { TipoArchivo } from '../../../../../../../domain/enums';
 
 export const useAudioRecorder = () => {
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
   const [isRecording, setIsRecording] = useState(false);
+
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
+  const streamRef = useRef<MediaStream | null>(null);
+
+  const [analyser, setAnalyser] = useState<AnalyserNode | null>(null);
+  const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
+  const [time, setTime] = useState(0);
+
+  useEffect(() => {
+    let id: ReturnType<typeof setInterval>;
+    if (isRecording) {
+      id = setInterval(() => setTime((t) => t + 1), 1000);
+    } else {
+      setTime(0);
+    }
+    return () => clearInterval(id);
+  }, [isRecording]);
+
+  const enableVisualizer = (stream: MediaStream) => {
+    const ctx = new AudioContext();
+    const analyserNode = ctx.createAnalyser();
+    analyserNode.fftSize = 2048;
+    const source = ctx.createMediaStreamSource(stream);
+    source.connect(analyserNode);
+    setAudioContext(ctx);
+    setAnalyser(analyserNode);
+  };
 
   const startRecording = async () => {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    mediaRecorderRef.current = new MediaRecorder(stream);
-    chunksRef.current = [];
-    setIsRecording(true);
+    const mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    streamRef.current = mediaStream;
+    enableVisualizer(mediaStream);
 
-    mediaRecorderRef.current.ondataavailable = (e) =>
-      chunksRef.current.push(e.data);
-    mediaRecorderRef.current.onstop = () => {
+    const recorder = new MediaRecorder(mediaStream);
+    mediaRecorderRef.current = recorder;
+    chunksRef.current = [];
+    recorder.ondataavailable = (e) => {
+      if (e.data.size > 0) chunksRef.current.push(e.data);
+    };
+    recorder.onstop = () => {
       const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
       setAudioBlob(blob);
-      setIsRecording(false);
-    };
 
-    mediaRecorderRef.current.start();
+      streamRef.current?.getTracks().forEach((t) => t.stop());
+      streamRef.current = null;
+      audioContext?.close().catch(() => {});
+    };
+    recorder.start();
+    setIsRecording(true);
   };
 
   const stopRecording = () => {
-    mediaRecorderRef.current?.stop();
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      mediaRecorderRef.current.stop();
+    }
+    setIsRecording(false);
   };
 
-  const clearAudio = () => setAudioBlob(null);
+  const clearAudio = () => {
+    setAudioBlob(null);
+    chunksRef.current = [];
+  };
 
   const toArchivo = async () => {
     if (!audioBlob) return null;
@@ -51,9 +89,11 @@ export const useAudioRecorder = () => {
   return {
     isRecording,
     audioBlob,
+    analyser,
     startRecording,
     stopRecording,
     clearAudio,
     toArchivo,
+    time,
   };
 };

@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { ClockIcon, CheckIcon, ExclamationTriangleIcon, PaperClipIcon } from '@heroicons/react/24/solid';
 import { IChatGrupalResponse } from '../../../../../../../domain/responses/chats.responses';
 import { IUsuarioResponse } from '../../../../../../../domain/responses/usuarios.responses';
 import { IMensajeResponse } from '../../../../../../../domain/responses/mensajes.responses';
@@ -73,7 +74,7 @@ export const BodyMensajesGrupales = ({
   return (
     <main
       ref={scrollRef}
-      className="flex-1 flex flex-col p-4 overflow-y-auto bg-gray-50"
+      className="flex-1 flex flex-col p-4 overflow-y-auto bg-gray-800 scrollbar-custom-auto"
     >
       {mensajesDelStore.length === 0 ? (
         <p className="text-center text-gray-400 italic mt-10">
@@ -90,7 +91,7 @@ export const BodyMensajesGrupales = ({
           return (
             <div
               key={m.id_mensaje}
-              className={`flex w-full mb-3 ${
+              className={`message-appear flex w-full mb-3 ${
                 esMio ? 'justify-end' : 'justify-start'
               }`}
             >
@@ -136,19 +137,12 @@ export const BodyMensajesGrupales = ({
 
                       if (isImage && canOpen) {
                         return (
-                          <a
+                          <img
                             key={a.id_archivo}
-                            href={a.link!}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="block overflow-hidden rounded-md border border-gray-300 bg-white"
-                          >
-                            <img
-                              src={a.link!}
-                              alt={nombre}
-                              className="max-h-40 w-auto object-cover"
-                            />
-                          </a>
+                            src={a.link!}
+                            alt={nombre}
+                            className="max-w-xs rounded-lg shadow-sm"
+                          />
                         );
                       }
 
@@ -179,7 +173,7 @@ export const BodyMensajesGrupales = ({
                               : 'border-gray-300 bg-gray-100 text-gray-700'
                           }`}
                         >
-                          <span>📎</span>
+                          <PaperClipIcon className="size-4" />
                           <span className="truncate max-w-[200px]">{nombre}</span>
                           {!canOpen && (
                             <span className="opacity-70">(no disponible)</span>
@@ -204,9 +198,15 @@ export const BodyMensajesGrupales = ({
 
                   {esMio && (
                     <span aria-hidden>
-                      {estadoEnvio === EstadoEnvioMensaje.SENDING && '⏳'}
-                      {estadoEnvio === EstadoEnvioMensaje.SENT && '✅'}
-                      {estadoEnvio === EstadoEnvioMensaje.ERROR && '⚠️'}
+                      {estadoEnvio === EstadoEnvioMensaje.SENDING && (
+                        <ClockIcon className="size-3" />
+                      )}
+                      {estadoEnvio === EstadoEnvioMensaje.SENT && (
+                        <CheckIcon className="size-3" />
+                      )}
+                      {estadoEnvio === EstadoEnvioMensaje.ERROR && (
+                        <ExclamationTriangleIcon className="size-3" />
+                      )}
                     </span>
                   )}
                 </div>

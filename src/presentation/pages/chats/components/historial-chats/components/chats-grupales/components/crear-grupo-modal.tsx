@@ -63,6 +63,7 @@ export const CrearGrupoModal = ({ isOpen, onClose, onCrearGrupo }: CrearGrupoMod
             onSiguiente={handleSiguientePaso}
             usuariosSeleccionados={usuariosSeleccionados}
             setUsuariosSeleccionados={setUsuariosSeleccionados}
+            variant="dark"
           />
         </div>
       )}

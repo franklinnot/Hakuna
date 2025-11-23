@@ -1,8 +1,15 @@
 import { useState } from 'react';
 import { IChatGrupalResponse } from '../../../../../../../../domain/responses/chats.responses';
-import { MicrophoneIcon, XMarkIcon } from '@heroicons/react/24/solid';
+import {
+  MicrophoneIcon,
+  XMarkIcon,
+  PhotoIcon,
+  PaperClipIcon,
+  PaperAirplaneIcon,
+} from '@heroicons/react/24/solid';
 import { useSendMensajeGrupal } from '../../../../../../../../application/use-cases/mensajes/useSendMensajeGrupal';
 import { useAudioRecorder } from '../../hooks/useAudioRecorder';
+import AudioRecordingBar from '../../../mensajes-privados/components/input-mensaje-privado/components/audio-recording-bar';
 import { useFileHandling } from './hooks/useFileHandling';
 import { Estado } from '../../../../../../../../domain/enums';
 
@@ -23,10 +30,12 @@ export const InputMensajeGrupal = ({
   const {
     isRecording,
     audioBlob,
+    analyser,
     startRecording,
     stopRecording,
     clearAudio,
     toArchivo,
+    time,
   } = useAudioRecorder();
   const {
     archivos,
@@ -65,8 +74,8 @@ export const InputMensajeGrupal = ({
   // Si el usuario está deshabilitado, mostrar mensaje informativo
   if (isUserDisabled) {
     return (
-      <footer className="flex items-center justify-center p-3 border-t border-gray-200 bg-gray-50">
-        <div className="text-center text-gray-500">
+      <footer className="flex items-center justify-center p-3 border-t border-gray-600 bg-gray-800">
+        <div className="text-center text-gray-300">
           <p className="text-sm">No puedes enviar mensajes en este grupo</p>
           <p className="text-xs text-gray-400">Has sido eliminado del grupo</p>
         </div>
@@ -75,50 +84,46 @@ export const InputMensajeGrupal = ({
   }
 
   return (
-    <footer className="flex flex-col gap-2 p-3 border-t border-gray-200 bg-white">
-      {/* preview de audio grabado */}
-      {audioBlob && (
-        <div className="flex items-center gap-2 bg-gray-100 p-2 rounded-lg">
-          <audio controls src={URL.createObjectURL(audioBlob)} className="flex-1" />
-          <button
-            onClick={clearAudio}
-            className="bg-black/60 rounded-full p-1"
-            title="Eliminar audio"
-          >
-            <XMarkIcon className="size-3 text-white" />
-          </button>
-        </div>
-      )}
-      
-      <div className="flex items-center flex-grow bg-gray-100 rounded-xl py-2 px-4">
+    <footer className="flex flex-col border-t border-gray-600 bg-gray-800 p-2">
+      {isRecording ? (
+        <AudioRecordingBar
+          analyser={analyser}
+          isRecording={isRecording}
+          time={time}
+          onCancel={clearAudio}
+          onSend={() => {
+            stopRecording();
+            handleSend();
+          }}
+        />
+      ) : (
+        <>
+          {audioBlob && (
+            <div className="flex items-center gap-2 bg-gray-700 p-2 px-3 rounded-lg">
+              <audio controls src={URL.createObjectURL(audioBlob)} className="flex-1" />
+              <button onClick={clearAudio} className="bg-black/60 rounded-full p-1" title="Eliminar audio">
+                <XMarkIcon className="size-3 text-white" />
+              </button>
+            </div>
+          )}
+
+      <div className="flex items-end gap-3 w-full">
         <button
-          className="text-xl text-gray-500 mr-2"
+          className="text-gray-400 hover:bg-emerald-400 hover:text-gray-900 p-1.5 rounded-xl transition-all cursor-pointer ml-2 mb-1.5"
+          title="Adjuntar imagen"
+          onClick={handleAttachClick}
+        >
+          <PhotoIcon className="size-6" />
+        </button>
+
+        <button
+          className="text-gray-400 hover:bg-emerald-400 hover:text-gray-900 p-1.5 rounded-xl transition-all cursor-pointer mb-1.5"
           title="Adjuntar archivo"
           onClick={handleAttachClick}
         >
-          📎
+          <PaperClipIcon className="size-6" />
         </button>
 
-        {/* botón de audio */}
-        {!isRecording ? (
-          <button
-            onClick={startRecording}
-            className="text-gray-500 hover:text-indigo-500 mr-2"
-            title="Grabar audio"
-          >
-            <MicrophoneIcon className="size-5" />
-          </button>
-        ) : (
-          <button
-            onClick={stopRecording}
-            className="text-red-500 animate-pulse mr-2"
-            title="Detener grabación"
-          >
-            <MicrophoneIcon className="size-5" />
-          </button>
-        )}
-
-        {/* input oculto para selección de archivos */}
         <input
           ref={fileInputRef}
           type="file"
@@ -128,51 +133,39 @@ export const InputMensajeGrupal = ({
           className="hidden"
         />
 
-        {archivos?.length ? (
-          <span className="mr-2 text-xs text-gray-600 bg-gray-200 rounded-md px-2 py-1 flex items-center gap-1">
-            {archivos.length} archivo{archivos.length > 1 ? 's' : ''} listo(s)
-            <button
-              className="ml-1 text-gray-500 hover:text-gray-700"
-              title="Quitar adjuntos"
-              onClick={clearArchivos}
-            >
-              ✖
-            </button>
-          </span>
-        ) : null}
+        <div className="flex flex-grow relative p-3 pl-3.5">
+          <input
+            type="text"
+            placeholder="Escribe un mensaje..."
+            value={descripcion}
+            onChange={(e) => setDescripcion(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
+            disabled={isLoading || isRecording}
+            className="w-full text-gray-100 focus:outline-none leading-relaxed placeholder-gray-400 disabled:opacity-50 caret-gray-200"
+          />
+        </div>
 
-        <input
-          type="text"
-          placeholder="Escribe un mensaje..."
-          value={descripcion}
-          onChange={(e) => setDescripcion(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
-          disabled={isLoading || isRecording}
-          className="flex-grow bg-transparent focus:outline-none text-gray-800 placeholder-gray-400 disabled:opacity-50"
-        />
-
-        <button
-          className="text-xl text-gray-500 ml-2"
-          title="Enviar emoji"
-          onClick={() => {/* TODO: Implementar selector de emojis */}}
-        >
-          🙂
-        </button>
+        {!descripcion.trim().length ? (
+          <button
+            onClick={startRecording}
+            className="text-gray-400 hover:bg-emerald-400 hover:text-gray-900 p-1.5 rounded-xl transition-all cursor-pointer"
+            title="Grabar audio"
+          >
+            <MicrophoneIcon className="size-6" />
+          </button>
+        ) : (
+          <button
+            onClick={handleSend}
+            disabled={isLoading}
+            className="text-gray-400 hover:bg-emerald-400 hover:text-gray-900 p-1.5 rounded-xl transition-all cursor-pointer"
+            title="Enviar"
+          >
+            <PaperAirplaneIcon className="size-6" />
+          </button>
+        )}
       </div>
-
-      <button
-        onClick={handleSend}
-        disabled={isLoading || (!descripcion.trim() && !archivos?.length && !audioBlob && !isRecording)}
-        className={`w-11 h-11 rounded-xl flex items-center justify-center shadow-md transition-colors ${
-          isLoading || (!descripcion.trim() && !archivos?.length && !audioBlob && !isRecording)
-            ? 'bg-gray-400 cursor-not-allowed' 
-            : 'bg-indigo-500 hover:bg-indigo-600'
-        }`}
-      >
-        <span className="text-xl text-white">
-          {isLoading ? '⏳' : '➡️'}
-        </span>
-      </button>
+        </>
+      )}
     </footer>
   );
 };

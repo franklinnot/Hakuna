@@ -13,6 +13,7 @@ interface SeleccionarUsuariosProps {
   usuariosSeleccionados: IUsuarioResponse[];
   setUsuariosSeleccionados: (usuarios: IUsuarioResponse[]) => void;
   miembrosExistentes?: string[]; // IDs de usuarios que ya están en el grupo
+  variant?: 'light' | 'dark';
 }
 
 export const SeleccionarUsuarios = ({
@@ -20,6 +21,7 @@ export const SeleccionarUsuarios = ({
   usuariosSeleccionados,
   setUsuariosSeleccionados,
   miembrosExistentes = [],
+  variant = 'light',
 }: SeleccionarUsuariosProps) => {
   const [isLoadingGlobal, setIsLoadingGlobal] = useState(false);
 
@@ -57,25 +59,24 @@ export const SeleccionarUsuarios = ({
   return (
     <div className="w-full h-full flex flex-col">
       {/* Barra de búsqueda */}
-      <div className="p-4 border-b border-gray-100">
+      <div className={`p-4 border-b ${variant === 'dark' ? 'border-gray-700' : 'border-gray-100'}`}>
         <div className="relative">
           <MagnifyingGlassIcon
-            className="absolute left-3 top-1/2 transform 
-            -translate-y-1/2 h-4 w-4 text-gray-400"
+            className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 ${variant === 'dark' ? 'text-gray-300' : 'text-gray-400'}`}
           />
           <Input
             type="text"
             placeholder="Buscar contactos..."
             value={busqueda}
             onChange={(e) => setBusqueda(e.target.value)}
-            className="pl-10 bg-gray-50 border-gray-200"
+            className={`pl-10 ${variant === 'dark' ? 'bg-gray-800 border-gray-700 text-gray-100 placeholder-gray-400' : 'bg-gray-50 border-gray-200'}`}
           />
         </div>
       </div>
 
       {/* Usuarios seleccionados */}
       {usuariosSeleccionados.length > 0 && (
-        <div className="p-4 border-b border-gray-100">
+        <div className={`p-4 border-b ${variant === 'dark' ? 'border-gray-700' : 'border-gray-100'}`}>
           <div className="flex flex-wrap gap-2">
             {usuariosSeleccionados.map((usuario) => (
               <div
@@ -89,7 +90,7 @@ export const SeleccionarUsuarios = ({
                   nombre={usuario.nombre}
                   className="w-6 h-6"
                 />
-                <span className="text-sm font-medium text-gray-800">
+                <span className={`text-sm font-medium ${variant === 'dark' ? 'text-gray-100' : 'text-gray-800'}`}>
                   {usuario.nombre}
                 </span>
                 <button
@@ -108,8 +109,8 @@ export const SeleccionarUsuarios = ({
       {/* Lista de usuarios */}
       <div className="flex-1 overflow-y-auto">
         {/* Título de sección */}
-        <div className="px-4 py-2 bg-gray-50">
-          <p className="text-sm font-medium text-gray-600">
+        <div className={`${variant === 'dark' ? 'px-4 py-2 bg-gray-800' : 'px-4 py-2 bg-gray-50'}`}>
+          <p className={`text-sm font-medium ${variant === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
             {tieneBusquedaActiva ? 'Resultados de búsqueda' : 'Contactos'}
           </p>
         </div>
@@ -120,12 +121,12 @@ export const SeleccionarUsuarios = ({
             {Array.from({ length: 5 }).map((_, i) => (
               <div
                 key={i}
-                className="flex items-center gap-3 p-4 animate-pulse"
+                className={`flex items-center gap-3 p-4 animate-pulse ${variant === 'dark' ? 'bg-transparent' : ''}`}
               >
-                <div className="w-12 h-12 rounded-full bg-gray-200" />
+                <div className={`w-12 h-12 rounded-full ${variant === 'dark' ? 'bg-gray-700' : 'bg-gray-200'}`} />
                 <div className="flex-1">
-                  <div className="h-4 bg-gray-200 rounded w-3/4 mb-1" />
-                  <div className="h-3 bg-gray-200 rounded w-1/2" />
+                  <div className={`h-4 rounded w-3/4 mb-1 ${variant === 'dark' ? 'bg-gray-700' : 'bg-gray-200'}`} />
+                  <div className={`h-3 rounded w-1/2 ${variant === 'dark' ? 'bg-gray-700' : 'bg-gray-200'}`} />
                 </div>
               </div>
             ))}
@@ -136,7 +137,7 @@ export const SeleccionarUsuarios = ({
         {!loading && (
           <div>
             {usuariosParaMostrar.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">
+              <div className={`text-center py-8 ${variant === 'dark' ? 'text-gray-300' : 'text-gray-500'}`}>
                 <p className="text-sm">
                   {tieneBusquedaActiva
                     ? 'No se encontraron usuarios'
@@ -154,10 +155,16 @@ export const SeleccionarUsuarios = ({
                     onClick={() => toggleUsuario(usuario)}
                     className={`flex items-center gap-3 p-4 transition-colors ${
                       yaEstaEnGrupo
-                        ? 'bg-gray-50 cursor-not-allowed opacity-60'
+                        ? variant === 'dark'
+                          ? 'bg-gray-700 cursor-not-allowed opacity-60'
+                          : 'bg-gray-50 cursor-not-allowed opacity-60'
                         : seleccionado
-                        ? 'bg-green-50 hover:bg-green-100 cursor-pointer'
-                        : 'hover:bg-gray-50 cursor-pointer'
+                        ? variant === 'dark'
+                          ? 'bg-[var(--green-primary)]/10 hover:bg-[var(--green-primary)]/20 cursor-pointer'
+                          : 'bg-green-50 hover:bg-green-100 cursor-pointer'
+                        : variant === 'dark'
+                          ? 'hover:bg-gray-700 cursor-pointer'
+                          : 'hover:bg-gray-50 cursor-pointer'
                     }`}
                   >
                     <FotoPerfil
@@ -167,16 +174,16 @@ export const SeleccionarUsuarios = ({
                     />
 
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium text-gray-800 truncate">
+                      <p className={`font-medium truncate ${variant === 'dark' ? 'text-gray-100' : 'text-gray-800'}`}>
                         {usuario.nombre}
                       </p>
-                      <p className="text-sm text-gray-500 truncate">
+                      <p className={`text-sm truncate ${variant === 'dark' ? 'text-gray-300' : 'text-gray-500'}`}>
                         @{usuario.username}
                       </p>
                     </div>
 
                     {yaEstaEnGrupo ? (
-                      <span className="text-xs text-gray-500 font-medium">
+                      <span className={`text-xs font-medium ${variant === 'dark' ? 'text-gray-300' : 'text-gray-500'}`}>
                         Ya está en el grupo
                       </span>
                     ) : seleccionado ? (
@@ -209,7 +216,7 @@ export const SeleccionarUsuarios = ({
 
       {/* Botón Siguiente */}
       {usuariosSeleccionados.length > 0 && (
-        <div className="p-4 border-t border-gray-100">
+        <div className={`p-4 border-t ${variant === 'dark' ? 'border-gray-700' : 'border-gray-100'}`}>
           <Button
             onClick={handleSiguiente}
             className="w-full bg-[var(--green-primary)] hover:bg-[var(--green-dark)] 

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { PlusIcon } from '@heroicons/react/24/outline';
 import { AppStore } from '../../../../../../../application/store/app.store';
 import { useChatsGrupalesFlow } from './hooks/useChatsGrupalesFlow';
@@ -52,13 +53,20 @@ export const ChatsGrupales = () => {
       {/* Lista de chats grupales */}
       <div className="flex-1 overflow-y-auto space-y-2">
         {sortedChatsGrupales.length > 0 ? (
-          sortedChatsGrupales.map((chat) => (
-            <ChatGrupalCard
-              key={chat.id_chat}
-              chat={chat}
-              onClick={handleChatClick}
-            />
-          ))
+          <AnimatePresence>
+            {sortedChatsGrupales.map((chat) => (
+              <motion.div
+                key={chat.id_chat}
+                layout
+                transition={{ type: 'spring', stiffness: 250, damping: 25 }}
+              >
+                <ChatGrupalCard
+                  chat={chat}
+                  onClick={handleChatClick}
+                />
+              </motion.div>
+            ))}
+          </AnimatePresence>
         ) : (
           <div className="text-center text-gray-400 py-8">
             <p className="text-sm">No tienes grupos aún</p>
@@ -74,6 +82,7 @@ export const ChatsGrupales = () => {
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         title="Nuevo grupo"
+        variant="dark"
       >
         <CrearGrupoModal
           isOpen={isModalOpen}

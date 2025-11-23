@@ -66,18 +66,18 @@ export const ConfigurarGrupoModal = ({
       {/* Configuración del grupo */}
       <div className="flex-1 overflow-y-auto">
         {/* Botón volver */}
-        <div className="p-4 border-b border-gray-100">
+        <div className="p-4 border-b border-gray-700">
           <button
             onClick={onVolver}
-            className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="flex items-center gap-2 p-2 hover:bg-gray-700 rounded-lg transition-colors"
           >
-            <ArrowLeftIcon className="h-5 w-5 text-gray-600" />
-            <span className="text-sm text-gray-600">Volver</span>
+            <ArrowLeftIcon className="h-5 w-5 text-gray-300" />
+            <span className="text-sm text-gray-300">Volver</span>
           </button>
         </div>
 
         {/* Foto y datos del grupo */}
-        <div className="p-6 border-b border-gray-100">
+        <div className="p-6 border-b border-gray-700">
           <div className="flex flex-col items-center space-y-6">
             {/* Foto del grupo centrada */}
             <div className="relative">
@@ -86,7 +86,7 @@ export const ConfigurarGrupoModal = ({
 
             {/* Campos de texto debajo de la foto */}
             <div className="w-full max-w-sm flex flex-col gap-4">
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-sm font-medium text-gray-200">
                 Nombre del grupo
                 <Input
                   type="text"
@@ -98,7 +98,7 @@ export const ConfigurarGrupoModal = ({
                 />
               </label>
 
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-sm font-medium text-gray-200">
                 Descripción del grupo
                 <Input
                   type="text"
@@ -115,8 +115,8 @@ export const ConfigurarGrupoModal = ({
         {/* Participantes */}
         <div className="p-4">
           <div className="flex items-center gap-2 mb-4">
-            <UserGroupIcon className="h-5 w-5 text-gray-500" />
-            <h3 className="text-sm font-medium text-gray-700">
+            <UserGroupIcon className="h-5 w-5 text-gray-300" />
+            <h3 className="text-sm font-medium text-gray-100">
               Participantes: {usuarios.length + 1}
             </h3>
           </div>
@@ -130,10 +130,10 @@ export const ConfigurarGrupoModal = ({
                 className="w-10 h-10"
               />
               <div className="flex-1">
-                <p className="font-medium text-gray-900">
+                <p className="font-medium text-gray-100">
                   {usuario?.nombre || 'Tú'}
                 </p>
-                <p className="text-sm text-gray-600">Admin del grupo</p>
+                <p className="text-sm text-gray-300">Admin del grupo</p>
               </div>
             </div>
 
@@ -149,8 +149,8 @@ export const ConfigurarGrupoModal = ({
                   className="w-10 h-10"
                 />
                 <div className="flex-1">
-                  <p className="font-medium text-gray-900">{usuario.nombre}</p>
-                  <p className="text-sm text-gray-600">@{usuario.username}</p>
+                  <p className="font-medium text-gray-100">{usuario.nombre}</p>
+                  <p className="text-sm text-gray-300">@{usuario.username}</p>
                 </div>
               </div>
             ))}
@@ -159,7 +159,7 @@ export const ConfigurarGrupoModal = ({
       </div>
 
       {/* Botón crear grupo */}
-      <div className="p-4 border-t border-gray-200">
+      <div className="p-4 border-t border-gray-700">
         <Button
           onClick={handleCrearGrupo}
           disabled={!nombreGrupo.trim()}

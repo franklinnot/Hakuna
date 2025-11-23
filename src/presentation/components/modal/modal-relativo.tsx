@@ -9,6 +9,7 @@ export interface ModalRelativoProps {
   title?: string;
   parentRef: React.RefObject<HTMLElement>;
   position?: 'left' | 'right' | 'center';
+  variant?: 'light' | 'dark';
 }
 
 export const ModalRelativo: React.FC<ModalRelativoProps> = ({
@@ -18,6 +19,7 @@ export const ModalRelativo: React.FC<ModalRelativoProps> = ({
   title,
   parentRef,
   position = 'center',
+  variant = 'light',
 }) => {
   const [coords, setCoords] = useState({ top: 0, left: 0 });
   const modalRef = useRef<HTMLDivElement>(null);
@@ -87,24 +89,24 @@ export const ModalRelativo: React.FC<ModalRelativoProps> = ({
     >
       <div
         ref={modalRef}
-        className="modal-content modal-shadow-only"
+        className={`modal-content modal-shadow-only ${variant === 'dark' ? 'dark-modal' : ''}`}
         onClick={handleContentClick}
       >
-        <div className="modal-header">
+        <div className={`modal-header ${variant === 'dark' ? 'dark-header' : ''}`}>
           {title && (
-            <h2 id="modal-title" className="modal-title">
+            <h2 id="modal-title" className={`modal-title ${variant === 'dark' ? 'dark-title' : ''}`}>
               {title}
             </h2>
           )}
           <button
             onClick={onClose}
-            className="modal-close"
+            className={`modal-close ${variant === 'dark' ? 'dark-close' : ''}`}
             aria-label="Cerrar modal"
           >
             <XMarkIcon className="h-5 w-5" />
           </button>
         </div>
-        <div className="modal-body">{children}</div>
+        <div className={`modal-body ${variant === 'dark' ? 'dark-body' : ''}`}>{children}</div>
       </div>
     </div>
   );
