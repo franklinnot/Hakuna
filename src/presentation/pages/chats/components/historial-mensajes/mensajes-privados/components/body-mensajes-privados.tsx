@@ -6,7 +6,11 @@ import {
 import clsx from 'clsx';
 import { useShowMensajesPrivadosFlow } from './input-mensaje-privado/hooks/useShowMensajesPrivadosFlow';
 import { MensajesPrivadosProps } from '../mensajes-privados';
-import { EstadoEnvioMensaje, TipoArchivo } from '../../../../../../../domain/enums';
+import {
+  EstadoEnvioMensaje,
+  TipoArchivo,
+} from '../../../../../../../domain/enums';
+import { NotaDeVoz } from '../../components/NotaDeVoz';
 
 export const BodyMensajesPrivados = ({
   chat,
@@ -67,12 +71,7 @@ export const BodyMensajesPrivados = ({
 
                       if (a.tipo_archivo === TipoArchivo.AUDIO)
                         return (
-                          <audio
-                            key={i}
-                            controls
-                            src={a.link || undefined}
-                            className="w-56 rounded-lg"
-                          />
+                          <NotaDeVoz key={i} url={a.link!} esMio={esMio} />
                         );
 
                       return (

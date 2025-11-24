@@ -1,11 +1,11 @@
 import { useRef, useState } from 'react';
 import {
   PaperAirplaneIcon,
-  PhotoIcon,
+  CameraIcon,
   MicrophoneIcon,
-  XMarkIcon,
   PaperClipIcon,
 } from '@heroicons/react/24/solid';
+import { XMarkIcon } from '@heroicons/react/16/solid';
 
 import { useInputMensajePrivadoFlow } from './hooks/useInputMensajePrivadoFlow';
 import { useFileUploader } from './hooks/useFileUploader';
@@ -91,7 +91,7 @@ export const InputMensajePrivado = ({
     ];
 
     if (!trimmed && !adjuntos.length) return;
-
+    
     setArchivos(adjuntos);
     await handleSend(trimmed, adjuntos);
 
@@ -109,7 +109,7 @@ export const InputMensajePrivado = ({
   // ---------------------------------------
 
   return (
-    <footer className="flex flex-col border-t border-gray-600 bg-gray-800 p-2">
+    <footer className="flex flex-col border-t border-gray-600 bg-gray-800 p-2 px-3">
       {/* PREVIEW DE IMÁGENES */}
       {imagenes.length > 0 && (
         <div className="flex gap-2 overflow-x-auto pb-1">
@@ -118,13 +118,14 @@ export const InputMensajePrivado = ({
               <img
                 src={URL.createObjectURL(img)}
                 alt="preview"
-                className="w-16 h-16 object-cover rounded-lg"
+                className="size-24 m-2 object-cover rounded-lg"
               />
               <button
                 onClick={() => handleRemoveImage(i)}
-                className="absolute -top-1 -right-1 bg-black/60 rounded-full p-1"
+                className="absolute -top-0 -right-0 bg-black/80 rounded-full p-1
+                cursor-pointer hover:bg-black/100"
               >
-                <XMarkIcon className="size-3 text-white" />
+                <XMarkIcon className="size-5 text-gray-300" />
               </button>
             </div>
           ))}
@@ -158,9 +159,9 @@ export const InputMensajePrivado = ({
           {/* IMÁGENES */}
           <label
             className="text-gray-400 hover:bg-emerald-400 hover:text-gray-900 
-            p-1.5 rounded-xl transition-all cursor-pointer ml-2 mb-1.5"
+            p-1.5 rounded-xl transition-all cursor-pointer mb-1.5"
           >
-            <PhotoIcon className="size-6" />
+            <CameraIcon className="size-6" />
             <input
               type="file"
               multiple
@@ -180,7 +181,7 @@ export const InputMensajePrivado = ({
               type="file"
               multiple
               hidden
-              accept="image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip,.rar"
+              accept="video/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip,.rar"
               onChange={handleSelectFiles}
             />
           </label>
@@ -211,7 +212,7 @@ export const InputMensajePrivado = ({
             <button
               onClick={startRecording}
               className="text-gray-400 hover:bg-emerald-400 hover:text-gray-900
-            p-1.5 rounded-xl transition-all cursor-pointer"
+            p-1.5 rounded-xl transition-all cursor-pointer mb-1.5 mr-1"
             >
               <MicrophoneIcon className="size-6" />
             </button>
@@ -220,7 +221,7 @@ export const InputMensajePrivado = ({
               onClick={enviar}
               disabled={!canSend}
               className="text-gray-400 hover:bg-emerald-400 hover:text-gray-900
-            p-1.5 rounded-xl transition-all cursor-pointer"
+            p-1.5 rounded-xl transition-all cursor-pointer mb-1.5"
             >
               <PaperAirplaneIcon className="size-6" />
             </button>
