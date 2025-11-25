@@ -4,6 +4,7 @@ import {
   CameraIcon,
   MicrophoneIcon,
   PaperClipIcon,
+  DocumentMinusIcon,
 } from '@heroicons/react/24/solid';
 import { XMarkIcon } from '@heroicons/react/16/solid';
 
@@ -25,10 +26,18 @@ export const InputMensajePrivado = ({
   //  HOOKS
   // ---------------------------------------
 
-  const { setArchivos, handleSend } = useInputMensajePrivadoFlow(chat, usuario);
+  const { handleSend } = useInputMensajePrivadoFlow(chat, usuario);
 
-  const { imagenes, handleFiles, handlePaste, clearImagenes, toArchivos } =
-    useFileUploader();
+  const {
+    imagenes,
+    documentos,
+    handleFiles,
+    handlePaste,
+    clearImagenes,
+    clearDocumentos,
+    removeDocumento,
+    toArchivos,
+  } = useFileUploader();
 
   const {
     isRecording,
@@ -91,22 +100,23 @@ export const InputMensajePrivado = ({
 
     if (trimmed) {
       setDesc('');
-    }
+    } // toArchivos ahora obtiene imágenes y documentos
 
-    const imagenArchivos = await toArchivos();
+    const adjuntos = await toArchivos();
     const audioArchivo = await toArchivo();
 
-    const adjuntos = [
-      ...(imagenArchivos ?? []),
+    const todosLosAdjuntos = [
+      ...(adjuntos ?? []),
       ...(audioArchivo ? [audioArchivo] : []),
     ];
 
-    if (!trimmed && !adjuntos.length) return;
+    if (!trimmed && !todosLosAdjuntos.length) return;
 
     clearImagenes();
+    clearDocumentos(); // 👈 Limpiar documentos
     clearAudio();
 
-    await handleSend(trimmed, adjuntos);
+    await handleSend(trimmed, todosLosAdjuntos);
   };
 
   const audioURL = audioBlob ? URL.createObjectURL(audioBlob) : null;
@@ -152,14 +162,35 @@ export const InputMensajePrivado = ({
         </div>
       )}
 
+      {documentos.length > 0 && (
+        <div className="flex gap-2 overflow-x-auto pb-1">
+          {documentos.map((doc, i) => (
+            <div key={`doc-${i}`} className="relative">
+              <div className="size-24 m-2 flex flex-col justify-center items-center rounded-lg bg-gray-700 p-2 text-center">
+                <DocumentMinusIcon className="size-8 text-gray-400 mb-1" />
+                <p className="text-xs text-gray-300 truncate w-full px-1"></p>
+              </div>
+
+              <button
+                onClick={() => removeDocumento(i)}
+                className="absolute -top-0 -right-0 bg-black/80 rounded-full p-1
+                cursor-pointer hover:bg-black/100"
+              >
+                <XMarkIcon className="size-5 text-gray-300" />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
       {isRecording ? (
         <AudioRecordingBar
           analyser={analyser}
           isRecording={isRecording}
-          isPaused={isPaused} // 👈 PROP FALTANTE 1
+          isPaused={isPaused}
           time={time}
           onCancel={clearAudio}
-          onPauseResume={handlePauseResume} // 👈 PROP FALTANTE 2 (Usando la nueva función)
+          onPauseResume={handlePauseResume}
           onSend={async () => {
             stopRecording();
             await enviar();
