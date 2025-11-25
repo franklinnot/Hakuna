@@ -91,12 +91,11 @@ export const InputMensajePrivado = ({
     ];
 
     if (!trimmed && !adjuntos.length) return;
-    
-    setArchivos(adjuntos);
-    await handleSend(trimmed, adjuntos);
 
     clearImagenes();
     clearAudio();
+
+    await handleSend(trimmed, adjuntos);
   };
 
   const audioURL = audioBlob ? URL.createObjectURL(audioBlob) : null;

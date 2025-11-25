@@ -57,7 +57,7 @@ export const BodyMensajesPrivados = ({
                 {m.descripcion && <p>{m.descripcion}</p>}
 
                 {m.archivos && m.archivos.length > 0 && (
-                  <div className="mt-2 flex flex-col gap-2">
+                  <div className="mt-1 flex flex-col gap-2">
                     {m.archivos.map((a, i) => {
                       if (a.tipo_archivo === TipoArchivo.IMAGEN)
                         return (
