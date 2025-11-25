@@ -39,10 +39,21 @@ export const InputMensajePrivado = ({
     stopRecording,
     clearAudio,
     toArchivo,
+    isPaused,
+    pauseRecording,
+    resumeRecording,
   } = useAudioRecorder();
 
   const [desc, setDesc] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const handlePauseResume = () => {
+    if (isPaused) {
+      resumeRecording();
+    } else {
+      pauseRecording();
+    }
+  };
 
   // ---------------------------------------
   //  AUTO-ALTURA DEL TEXTAREA
@@ -145,11 +156,13 @@ export const InputMensajePrivado = ({
         <AudioRecordingBar
           analyser={analyser}
           isRecording={isRecording}
+          isPaused={isPaused} // 👈 PROP FALTANTE 1
           time={time}
           onCancel={clearAudio}
-          onSend={() => {
+          onPauseResume={handlePauseResume} // 👈 PROP FALTANTE 2 (Usando la nueva función)
+          onSend={async () => {
             stopRecording();
-            enviar();
+            await enviar();
           }}
         />
       ) : (

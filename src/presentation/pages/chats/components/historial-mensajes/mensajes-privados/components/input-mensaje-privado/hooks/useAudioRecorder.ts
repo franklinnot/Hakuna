@@ -4,6 +4,7 @@ import { TipoArchivo } from '../../../../../../../../../domain/enums';
 export const useAudioRecorder = () => {
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
   const [isRecording, setIsRecording] = useState(false);
+  const [isPaused, setIsPaused] = useState(false); // 👈 NUEVO ESTADO PARA PAUSA
 
   // refs internas reales
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -15,16 +16,24 @@ export const useAudioRecorder = () => {
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
   const [time, setTime] = useState(0);
 
+  // ---------------------------------------
+  // CONTROL DEL TIEMPO
+  // ---------------------------------------
   useEffect(() => {
     let id: NodeJS.Timeout;
-    if (isRecording) {
+    // Solo incrementamos el tiempo si está grabando Y NO está pausado
+    if (isRecording && !isPaused) {
       id = setInterval(() => setTime((t) => t + 1), 1000);
-    } else {
+    } else if (!isRecording && !audioBlob) {
+      // Si no hay grabación ni blob (grabación limpia/cancelada), reseteamos el tiempo
       setTime(0);
     }
     return () => clearInterval(id);
-  }, [isRecording]);
+  }, [isRecording, isPaused, audioBlob]); // 👈 Añadimos isPaused como dependencia
 
+  // ---------------------------------------
+  // VISUALIZER (Sin cambios)
+  // ---------------------------------------
 
   const enableVisualizer = (stream: MediaStream) => {
     const ctx = new AudioContext();
@@ -39,7 +48,15 @@ export const useAudioRecorder = () => {
     setAnalyser(analyserNode);
   };
 
+  // ---------------------------------------
+  // INICIAR GRABACIÓN (Sin cambios)
+  // ---------------------------------------
+
   const startRecording = async () => {
+    // Limpiamos cualquier audio previo antes de empezar
+    clearAudio();
+    setIsPaused(false); // Aseguramos que no esté pausado al iniciar
+
     const mediaStream = await navigator.mediaDevices.getUserMedia({
       audio: true,
     });
@@ -76,6 +93,10 @@ export const useAudioRecorder = () => {
     setIsRecording(true);
   };
 
+  // ---------------------------------------
+  // DETENER GRABACIÓN (Sin cambios en lógica, solo reubicación)
+  // ---------------------------------------
+
   const stopRecording = () => {
     if (
       mediaRecorderRef.current &&
@@ -84,12 +105,51 @@ export const useAudioRecorder = () => {
       mediaRecorderRef.current.stop();
     }
     setIsRecording(false);
+    setIsPaused(false); // Aseguramos que el estado de pausa se limpie al detener
   };
 
+  // ---------------------------------------
+  // PAUSA Y REANUDACIÓN 👈 NUEVAS FUNCIONES
+  // ---------------------------------------
+
+  const pauseRecording = () => {
+    if (
+      mediaRecorderRef.current &&
+      mediaRecorderRef.current.state === 'recording'
+    ) {
+      mediaRecorderRef.current.pause();
+      setIsPaused(true);
+    }
+  };
+
+  const resumeRecording = () => {
+    if (
+      mediaRecorderRef.current &&
+      mediaRecorderRef.current.state === 'paused'
+    ) {
+      mediaRecorderRef.current.resume();
+      setIsPaused(false);
+    }
+  };
+
+  // ---------------------------------------
+  // LIMPIAR AUDIO
+  // ---------------------------------------
+
   const clearAudio = () => {
+    // Si estamos grabando, detenemos primero la grabación (para limpiar recursos)
+    if (isRecording) {
+      stopRecording();
+    }
     setAudioBlob(null);
     chunksRef.current = [];
+    setTime(0); // Aseguramos el reseteo del tiempo
+    setIsPaused(false);
   };
+
+  // ---------------------------------------
+  // CONVERSIÓN A ARCHIVO (Sin cambios)
+  // ---------------------------------------
 
   const toArchivo = async () => {
     if (!audioBlob) return null;
@@ -112,12 +172,15 @@ export const useAudioRecorder = () => {
 
   return {
     isRecording,
+    isPaused,
     audioBlob,
     analyser,
+    time,
     startRecording,
     stopRecording,
+    pauseRecording,
+    resumeRecording,
     clearAudio,
     toArchivo,
-    time
   };
 };
